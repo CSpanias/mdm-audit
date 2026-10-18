@@ -30,4 +30,4 @@ keywords = [
 ]
 
 [project.scripts]
-mdm-audit = "mdm_audit.cli:main"
+mdm-audit = "mdm_audit.review:main"
