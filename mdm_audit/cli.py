@@ -11,6 +11,7 @@ findings, remediation guidance, and report outputs.
 import argparse
 
 from rich.panel import Panel
+from textwrap import dedent
 
 from mdm_audit.exporters.json import export_findings_json
 from mdm_audit.exporters.markdown import export_markdown
@@ -24,7 +25,13 @@ def main() -> None:
     """
 
     parser = argparse.ArgumentParser(
-        description="Mobile Device Management review tool."
+        description="Mobile Device Management review tool.",
+        epilog=dedent(
+            """
+            Example:
+                mdm-audit
+            """
+        )
     )
 
     parser.parse_args()
