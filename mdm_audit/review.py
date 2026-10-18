@@ -436,17 +436,19 @@ def run_assessment() -> AssessmentResults:
     )
 
 
-if __name__ == "__main__":
+def main() -> None:
+
     results = run_assessment()
 
     console.print()
     console.print(Panel.fit("[bold green]Assessment Complete[/bold green]"))
-
     console.print(f"[cyan]Responses:[/cyan] {len(results.responses)}")
     console.print(f"[red]Findings:[/red] {len(results.findings)}")
-    console.print(
-        f"[green]Positive Observations:[/green] {len(results.positives)}"
-    )
+    console.print(f"[green]Positive Observations:[/green] {len(results.positives)}")
 
     export_findings_json(results, "assessment.json")
     export_markdown(results, "assessment.md")
+
+
+if __name__ == "__main__":
+    main()
