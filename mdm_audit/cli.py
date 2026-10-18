@@ -25,13 +25,8 @@ def main() -> None:
     """
 
     parser = argparse.ArgumentParser(
-        description="Mobile Device Management review tool.",
-        epilog=dedent(
-            """
-            Example:
-                mdm-audit
-            """
-        )
+        description="Conduct Mobile Device Management (MDM) security reviews.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     parser.parse_args()
