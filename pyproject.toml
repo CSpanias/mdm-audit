@@ -1,0 +1,33 @@
+[project]
+name = "mdm-audit"
+version = "0.0.1"
+description = "Interactive MDM configuration review and reporting tool"
+readme = "README.md"
+requires-python = ">=3.10"
+
+authors = [
+    { name = "Charalampos Spanias" }
+]
+
+dependencies = [
+    "rich>=13.0.0",
+    "pydantic>=2.0.0",
+    "jinja2>=3.1.0",
+    "pyyaml>=6.0"
+]
+
+keywords = [
+    "security",
+    "mdm",
+    "intune",
+    "jamf",
+    "workspaceone",
+    "android",
+    "ios",
+    "mobile",
+    "audit",
+    "compliance"
+]
+
+[project.scripts]
+mdm-audit = "mdm_audit.cli:main"

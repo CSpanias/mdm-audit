@@ -1,0 +1,12 @@
+# Test files
+*.md
+*.xml
+*.txt
+*.json
+
+# Generated files
+__pycache__/
+*.pyc
+
+# Documentation
+!README.md

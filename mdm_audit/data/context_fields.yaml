@@ -1,0 +1,95 @@
+# Context fields collected before an assessment begins.
+#
+# These fields define the information required to describe
+# the client's MDM environment, including platform counts,
+# device counts, MDM vendor details, and supported versions.
+#
+# Fields are loaded dynamically by the application to allow
+# future expansion without code changes.
+
+
+- id: client_name
+  order: 1
+  label: Client / Tenant Name
+  type: string
+  required: true
+  platforms:
+    - ios
+    - android
+
+- id: mdm_vendor
+  order: 2
+  label: Which MDM solution is being reviewed?
+  type: choice
+  required: true
+
+  options:
+    - Microsoft Intune
+    - Jamf Pro
+    - Omnissa Workspace ONE
+    - Google Endpoint Management
+    - Other
+
+  platforms:
+    - ios
+    - android
+
+- id: mdm_version
+  order: 3
+  label: Which MDM Platform Version / Service Release is in use?
+  type: string
+  required: true
+  hints:
+    Microsoft Intune: >
+      Tenant administration > Tenant status > Tenant details
+  platforms:
+    - ios
+    - android
+
+- id: ios_policy_count
+  order: 4
+  label: Number of iOS Policies
+  type: integer
+  required: true
+  platforms:
+    - ios
+
+- id: android_policy_count
+  order: 5
+  label: Number of Android Policies
+  type: integer
+  required: true
+  platforms:
+    - android
+
+- id: minimum_ios_version
+  order: 6
+  label: Minimum iOS Version
+  type: string
+  required: true
+  platforms:
+    - ios
+
+- id: minimum_android_version
+  order: 7
+  label: Minimum Android Version
+  type: string
+  required: true
+  platforms:
+    - android
+
+- id: ios_device_count
+  order: 8
+  label: Total Enrolled iOS Devices
+  type: integer
+  required: true
+  platforms:
+    - ios
+
+- id: android_device_count
+  order: 9
+  label: Total Enrolled Android Devices
+  type: integer
+  required: true
+  platforms:
+    - android
