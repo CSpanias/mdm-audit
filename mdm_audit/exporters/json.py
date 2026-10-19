@@ -20,6 +20,14 @@ def export_findings_json(
     Export findings in the standard findings format.
     """
 
+    assessment_platforms = []
+    
+    if results.context.ios_policy_count is not None:
+        assessment_platforms.append("ios")
+
+    if results.context.android_policy_count is not None:
+        assessment_platforms.append("android")
+
     findings = [
         {
             "id": "mdm-audit",
@@ -28,6 +36,7 @@ def export_findings_json(
                 "A review of the organisation's mobile "
                 "device management configuration was performed."
             ),
+            "platforms": assessment_platforms,
         }
     ]
 
