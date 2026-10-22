@@ -172,6 +172,7 @@ class VendorHints(BaseModel):
     each supported MDM platform.
     """
 
+    common: str | None = None
     intune: str
     jamf: str
     workspace_one: str

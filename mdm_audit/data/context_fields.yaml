@@ -67,6 +67,9 @@
   label: Minimum iOS Version
   type: string
   required: true
+  hints:
+    Microsoft Intune: >
+       Compliance policies > Device properties > Minimum OS version
   platforms:
     - ios
 
@@ -75,6 +78,9 @@
   label: Minimum Android Version
   type: string
   required: true
+  hints:
+    Microsoft Intune: >
+       Compliance policies > Device properties > Minimum OS version
   platforms:
     - android
 

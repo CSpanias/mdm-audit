@@ -155,17 +155,31 @@ def collect_context(
 
             vendor = responses.get("mdm_vendor")
                             
-            if field.hints and vendor:
-    
-                hint = field.hints.get(vendor)
-    
-                if hint:
-                    console.print(
-                        f"[bold italic]Check:[/bold italic] "
-                        f"[italic]{hint}[/italic]"
-                    )
+            if field.hints:
+
+                common_hint = field.hints.get("common")
+
+                if common_hint:
+                    console.print(f"[italic]{common_hint}[/italic]")
+
+                if vendor:
+
+                    vendor_hint = field.hints.get(vendor)
+
+                    if vendor_hint:
+                        console.print(
+                            f"[bold italic]Check:[/bold italic] "
+                            f"[italic]{vendor_hint}[/italic]"
+                        )
 
             value = input("> ")
+
+            if field.required:
+
+                while not value:
+
+                    console.print("[red]This field is required.[/red]")
+                    value = input("> ").strip()
 
         if field.type == "integer":
             while True:
@@ -197,6 +211,8 @@ def ask_question(
     responses.
     """
 
+    common_hint = question.hints.common
+
     vendor_map = {
         Vendor.INTUNE: question.hints.intune,
         Vendor.JAMF: question.hints.jamf,
@@ -204,7 +220,7 @@ def ask_question(
         Vendor.GOOGLE_ENDPOINT: question.hints.google_endpoint,
     }
 
-    hint = vendor_map.get(vendor)
+    vendor_hint = vendor_map.get(vendor)
 
     if question.applies_to == Platform.BOTH:
         question_platforms = platforms
@@ -217,13 +233,14 @@ def ask_question(
         f"[bold]{question.question}[/bold]"
     )
 
-    if hint:
-        console.print(f"[bold italic]Check:[/bold italic] [italic]{hint}[/italic]")
+    if common_hint:
+        console.print(f"[italic]{common_hint}[/italic]")
 
-    console.print(
-        f"[green]✓ {question.good_value}[/green]"
-        f"[red]✗ {question.bad_value}[/red]"
-    )
+    if vendor_hint:
+        console.print(
+            f"[bold italic]Check:[/bold italic] "
+            f"[italic]{vendor_hint}[/italic]"
+        )
 
     responses = []
 

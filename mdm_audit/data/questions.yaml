@@ -53,6 +53,9 @@
     Unsupported operating system versions are permitted.
 
   hints:
+    common: >
+      Check the latest versions: iOS - https://endoflife.date/ios | Android - https://endoflife.date/android
+
     intune: >
       Devices > Compliance Policies > Device Properties > Minimum OS Version
 
@@ -297,7 +300,7 @@
 
   hints:
     intune: >
-      App Protection Policies > Access Requirements > Biometric Authentication
+      Apps > App Protection Policies > iOs / Android > Access Requirements > Biometric Authentication
 
     jamf: >
       Configuration Profiles > Passcode and Restrictions
@@ -344,7 +347,7 @@
 
   hints:
     intune: >
-      Compliance Policies > Password Settings > Require Alphanumeric Password
+      Devices > Compliance Policies / App Protection > Password Settings > Require Alphanumeric Password
 
     jamf: >
       Configuration Profiles > Passcode > Require Alphanumeric Value
@@ -391,7 +394,7 @@
 
   hints:
     intune: >
-      Compliance Policies > Password Settings > Minimum Password Length
+      Devices > Compliance Policies / App Protection > Password Settings > Minimum Password Length
 
     jamf: >
       Configuration Profiles > Passcode > Minimum Passcode Length
@@ -437,7 +440,7 @@
 
   hints:
     intune: >
-      Device Restrictions > Unknown Sources
+      iOS: App Protection / Open-in > Use Managed App Sources | Android: Device Restrictions > Unknown Sources (block)
 
     jamf: >
       Restrictions > Application Installation Controls
