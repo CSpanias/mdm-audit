@@ -156,11 +156,14 @@ def collect_context(
             vendor = responses.get("mdm_vendor")
                             
             if field.hints:
-
+                console.print()
                 common_hint = field.hints.get("common")
 
                 if common_hint:
-                    console.print(f"[italic]{common_hint}[/italic]")
+                    console.print(
+                        f"[bold blue]Evidence[/bold blue]\n"
+                        f"[italic]{common_hint}[/italic]"
+                    )
 
                 if vendor:
 
@@ -168,7 +171,7 @@ def collect_context(
 
                     if vendor_hint:
                         console.print(
-                            f"[bold italic]Check:[/bold italic] "
+                            f"[bold yellow]Location[/bold yellow]\n"
                             f"[italic]{vendor_hint}[/italic]"
                         )
 
@@ -232,13 +235,17 @@ def ask_question(
         f"[bold cyan]Question {current}/{total}:[/bold cyan] "
         f"[bold]{question.question}[/bold]"
     )
+    console.print()
 
     if common_hint:
-        console.print(f"[italic]{common_hint}[/italic]")
+        console.print(
+            f"[bold blue]Evidence[/bold blue]\n"
+            f"[italic]{common_hint}[/italic]"
+        )
 
     if vendor_hint:
         console.print(
-            f"[bold italic]Check:[/bold italic] "
+            f"[bold yellow]Location[/bold yellow]\n"
             f"[italic]{vendor_hint}[/italic]"
         )
 
