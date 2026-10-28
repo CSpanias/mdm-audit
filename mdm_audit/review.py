@@ -39,20 +39,13 @@ def get_applicable_questions(
     platforms: list[Platform],
 ) -> list[Question]:
     """
-    Return all questions applicable to the selected platforms.
+    Return the assessment questions applicable to the selected
+    platforms.
 
-    Shared controls are included once regardless of how many
-    platforms are selected.
-
-    Args:
-        questions:
-            Complete set of available audit questions.
-
-        platforms:
-            Platforms selected for review.
-
-    Returns:
-        Ordered list of questions to present to the assessor.
+    Shared controls are always included, while platform-specific
+    controls are only included when the corresponding platform is
+    within scope. Questions are returned in the order defined
+    within the assessment configuration.
     """
 
     applicable_questions = []
@@ -64,7 +57,7 @@ def get_applicable_questions(
         elif question.applies_to in platforms:
             applicable_questions.append(question)
 
-    return sorted(applicable_questions, key=lambda q: q.id)
+    return applicable_questions
 
 
 def get_applicable_context_fields(
@@ -72,17 +65,11 @@ def get_applicable_context_fields(
     platforms: list[Platform],
 ) -> list[ContextField]:
     """
-    Return all context fields applicable to the selected platforms.
+    Return the context fields applicable to the selected platforms.
 
-    Args:
-        fields:
-            Complete set of context fields.
-
-        platforms:
-            Platforms selected for review.
-
-    Returns:
-        Ordered list of context fields to collect.
+    Platform-specific fields are filtered according to the review
+    scope and returned in display order for collection during the
+    assessment setup phase.
     """
 
     applicable_fields = []
@@ -96,8 +83,12 @@ def get_applicable_context_fields(
 
 def select_platforms() -> list[Platform]:
     """
-    Prompt the assessor to select the scope of the review.
+    Prompt the assessor to define the assessment scope.
+
+    The selected platforms determine which context fields and
+    assessment questions will be included in the review.
     """
+
 
     console.print()
     console.print("[bold]Which mobile platforms are being reviewed?[/bold]")
@@ -126,7 +117,12 @@ def collect_context(
     fields: list[ContextField],
 ) -> ReviewContext:
     """
-    Collect assessment context information.
+    Collect contextual information about the reviewed MDM
+    environment.
+
+    The collected information describes the environment under
+    review and is used within generated reports, exports, and
+    assessment summaries.
     """
 
     responses = {}
@@ -205,34 +201,30 @@ def collect_context(
 def ask_question(
     question: Question,
     vendor: Vendor,
-    platforms: list[Platform],
+    platform: Platform,
     current: int,
     total: int,
-) -> list[QuestionResponse]:
+) -> QuestionResponse:
     """
-    Present a question to the assessor and record one or more
-    responses.
+    Present an assessment question and record the assessor's
+    response.
+
+    Vendor-specific navigation guidance and evidence collection
+    notes are displayed when available. Questions are presented
+    within a platform-specific review and a single response is
+    recorded for the selected platform.
     """
 
-    common_hint = question.hints.common
+    common_hint = None
+    vendor_hint = None
 
-    vendor_map = {
-        Vendor.INTUNE: question.hints.intune,
-        Vendor.JAMF: question.hints.jamf,
-        Vendor.WORKSPACE_ONE: question.hints.workspace_one,
-        Vendor.GOOGLE_ENDPOINT: question.hints.google_endpoint,
-    }
-
-    vendor_hint = vendor_map.get(vendor)
-
-    if question.applies_to == Platform.BOTH:
-        question_platforms = platforms
-    else:
-        question_platforms = [question.applies_to]
+    if vendor == Vendor.INTUNE and question.hints.intune:
+        vendor_hint = question.hints.intune.strip()
 
     console.print()
     console.print(
-        f"[bold cyan]Question {current}/{total}:[/bold cyan] "
+        f"[bold cyan][{platform.value.upper()}] "
+        f"Question {current}/{total}:[/bold cyan] "
         f"[bold]{question.question}[/bold]"
     )
     console.print()
@@ -240,59 +232,65 @@ def ask_question(
     if common_hint:
         console.print(
             f"[bold blue]Evidence[/bold blue]\n"
-            f"[italic]{common_hint}[/italic]"
+            f"[italic]{common_hint.strip()}[/italic]"
         )
 
     if vendor_hint:
         console.print(
             f"[bold yellow]Location[/bold yellow]\n"
-            f"[italic]{vendor_hint}[/italic]"
+            f"[italic]{vendor_hint.strip()}[/italic]"
         )
 
-    responses = []
+    platform_hint = None
 
-    for platform in question_platforms:
-        console.print(f"[bold]{platform.value.upper()}[/bold]")
+    if platform == Platform.IOS:
+        platform_hint = question.hints.ios
 
-        console.print("1. Compliant")
-        console.print("2. Non-Compliant")
-        console.print("3. Not Applicable")
-        console.print("4. Unknown")
+    elif platform == Platform.ANDROID:
+        platform_hint = question.hints.android
 
-        while True:
-            choice = input("> ").strip()
-
-            match choice:
-                case "1":
-                    answer = AuditAnswer.COMPLIANT
-                    break
-
-                case "2":
-                    answer = AuditAnswer.NON_COMPLIANT
-                    break
-
-                case "3":
-                    answer = AuditAnswer.NOT_APPLICABLE
-                    break
-
-                case "4":
-                    answer = AuditAnswer.UNKNOWN
-                    break
-
-                case _:
-                    console.print(
-                        "[red]Invalid selection.[/red]"
-                    )
-
-        responses.append(
-            QuestionResponse(
-                question_id=question.id,
-                platform=platform,
-                answer=answer,
-            )
+    if platform_hint:
+        console.print()
+        console.print(
+            f"[bold cyan]Setting[/bold cyan]\n"
+            f"[italic]{platform_hint.strip()}[/italic]"
         )
 
-    return responses
+    console.print()
+
+    console.print("1. Compliant")
+    console.print("2. Non-Compliant")
+    console.print("3. Not Applicable")
+    console.print("4. Unknown")
+
+    while True:
+        choice = input("> ").strip()
+
+        match choice:
+            case "1":
+                answer = AuditAnswer.COMPLIANT
+                break
+
+            case "2":
+                answer = AuditAnswer.NON_COMPLIANT
+                break
+
+            case "3":
+                answer = AuditAnswer.NOT_APPLICABLE
+                break
+
+            case "4":
+                answer = AuditAnswer.UNKNOWN
+                break
+
+            case _:
+                console.print("[red]Invalid selection.[/red]")
+
+    return QuestionResponse(
+        finding_id=question.finding_id,
+        platform=platform,
+        answer=answer,
+    )
 
 
 def conduct_review(
@@ -301,26 +299,59 @@ def conduct_review(
     platforms: list[Platform],
 ) -> list[QuestionResponse]:
     """
-    Execute the assessment question set.
+    Execute the assessment questionnaire.
+
+    Questions are presented separately for each platform within
+    the review scope, allowing Android and iOS controls to be
+    assessed in dedicated sections. Shared controls are included
+    within each platform review where applicable.
+
+    Responses collected during the assessment are returned for
+    subsequent finding generation and reporting.
     """
 
     responses = []
 
-    total = len(questions)
+    for platform in platforms:
 
-    for current, question in enumerate(
-        questions,
-        start=1,
-    ):
-        question_responses = ask_question(
-            question,
-            vendor,
-            platforms,
-            current,
-            total,
+        console.print()
+        console.print(
+            f"[bold green]{platform.value.upper()} REVIEW[/bold green]"
         )
 
-        responses.extend(question_responses)
+        platform_questions = [
+            question
+            for question in questions
+            if (
+                question.applies_to == Platform.BOTH
+                or question.applies_to == platform
+            )
+        ]
+
+        total = len(platform_questions)
+
+        current_section = None
+
+        for current, question in enumerate(platform_questions, start=1):
+
+            if question.section != current_section:
+
+                console.print()
+
+                section_name = (question.section.replace("_", " ").title())
+                console.print(f"[bold magenta]{section_name}[/bold magenta]")
+
+                current_section = question.section
+
+            response = ask_question(
+                question,
+                vendor,
+                platform,
+                current,
+                total,
+            )
+
+            responses.append(response)
 
     return responses
 
@@ -330,18 +361,22 @@ def generate_findings(
     responses: list[QuestionResponse],
 ) -> list[Finding]:
     """
-    Generate finding records for non-compliant controls.
+    Generate findings from assessment responses.
+
+    A finding is created whenever a response does not match the
+    expected secure configuration defined by the corresponding
+    question.
     """
 
     findings = []
 
-    questions_by_id = {
-        question.id: question
+    questions_by_finding_id = {
+        question.finding_id: question
         for question in questions
     }
 
     for response in responses:
-        question = questions_by_id[response.question_id]
+        question = questions_by_finding_id[response.finding_id]
 
         if response.answer in (
             AuditAnswer.NOT_APPLICABLE,
@@ -369,18 +404,21 @@ def generate_positive_observations(
     responses: list[QuestionResponse],
 ) -> list[PositiveObservation]:
     """
-    Generate positive observations for compliant controls.
+    Generate positive observations from assessment responses.
+
+    Positive observations are created for controls that were found
+    to be configured in accordance with the expected secure state.
     """
 
     positives = []
 
-    questions_by_id = {
-        question.id: question
+    questions_by_finding_id = {
+        question.finding_id: question
         for question in questions
     }
 
     for response in responses:
-        question = questions_by_id[response.question_id]
+        question = questions_by_finding_id[response.finding_id]
 
         if response.answer in (
             AuditAnswer.NOT_APPLICABLE,
@@ -407,6 +445,10 @@ def build_assessment_results(
 ) -> AssessmentResults:
     """
     Build the final assessment results object.
+
+    This combines the collected context, assessment responses,
+    generated findings, and positive observations into a single
+    structure used by reporting and export components.
     """
 
     findings = generate_findings(
@@ -430,6 +472,11 @@ def build_assessment_results(
 def run_assessment() -> AssessmentResults:
     """
     Execute a complete MDM assessment.
+
+    The assessment workflow consists of scope selection, context
+    collection, questionnaire execution, and results generation.
+    The completed assessment results are returned for reporting
+    and export.
     """
 
     platforms = select_platforms()

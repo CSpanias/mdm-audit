@@ -10,7 +10,7 @@
 
 - id: client_name
   order: 1
-  label: Client / Tenant Name
+  label: What is the client or tenant name?
   type: string
   required: true
   platforms:
@@ -25,9 +25,6 @@
 
   options:
     - Microsoft Intune
-    - Jamf Pro
-    - Omnissa Workspace ONE
-    - Google Endpoint Management
     - Other
 
   platforms:
@@ -36,7 +33,7 @@
 
 - id: mdm_version
   order: 3
-  label: Which MDM Platform Version / Service Release is in use?
+  label: Which MDM platform version or service release is in use?
   type: string
   required: true
   hints:
@@ -48,54 +45,44 @@
 
 - id: ios_policy_count
   order: 4
-  label: Number of iOS Policies
+  label: How many iOS compliance policies are configured?
   type: integer
   required: true
+  hints:
+    Microsoft Intune: >
+      Devices > Manage Devices > Compliance
   platforms:
     - ios
 
 - id: android_policy_count
   order: 5
-  label: Number of Android Policies
+  label: How many Android compliance policies are configured?
   type: integer
   required: true
-  platforms:
-    - android
-
-- id: minimum_ios_version
-  order: 6
-  label: Minimum iOS Version
-  type: string
-  required: true
   hints:
     Microsoft Intune: >
-       Compliance policies > Device properties > Minimum OS version
-  platforms:
-    - ios
-
-- id: minimum_android_version
-  order: 7
-  label: Minimum Android Version
-  type: string
-  required: true
-  hints:
-    Microsoft Intune: >
-       Compliance policies > Device properties > Minimum OS version
+      Devices > Manage Devices > Compliance
   platforms:
     - android
 
 - id: ios_device_count
-  order: 8
-  label: Total Enrolled iOS Devices
+  order: 6
+  label: How many iOS devices are currently enrolled?
   type: integer
   required: true
+  hints:
+    Microsoft Intune: >
+      Devices > Overview > Apple mobile
   platforms:
     - ios
 
 - id: android_device_count
-  order: 9
-  label: Total Enrolled Android Devices
+  order: 7
+  label: How many Android devices are currently enrolled?
   type: integer
   required: true
+  hints:
+    Microsoft Intune: >
+      Devices > Overview > Android
   platforms:
     - android

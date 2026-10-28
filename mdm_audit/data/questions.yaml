@@ -14,15 +14,19 @@
 # than being hard-coded into the application.
 
 
-# Shared Controls (Q1-Q11)
+# ------------------------------------------------------------------------------
+# Compliance
+# ------------------------------------------------------------------------------
 
-- id: 1
-  applies_to: both
+- applies_to: both
   finding_id: mdm-unsupported-os-version
   finding_title: Unsupported Mobile OS Version
+  section: compliance
+
   expected_answer: compliant
 
-  question: Does the device operating system still receive official security updates from the vendor?
+  question: Does the device operating system still receive official security 
+    updates from the vendor?
 
   description: >
     The version of iOS or Android permitted by the MDM platform is
@@ -53,28 +57,24 @@
     Unsupported operating system versions are permitted.
 
   hints:
-    common: >
-      Check the latest versions: iOS - https://endoflife.date/ios | Android - https://endoflife.date/android
+    ios: >
+      Check the latest versions: https://endoflife.date/ios
+  
+    android: >
+      Check the latest versions: https://endoflife.date/android
 
-    intune: >
-      Devices > Compliance Policies > Device Properties > Minimum OS Version
+    intune: Devices > Manage Devices > Compliance > Click target Policy > 
+      Properties > Device Properties > Minimum OS version
 
-    jamf: >
-      Mobile Devices > Configuration Profiles > Passcode > Minimum OS Version
-
-    workspace_one: >
-      Devices > Profiles > iOS/Android > Passcode > Minimum OS Version
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Settings > Compliance Rules
-
-- id: 2
-  applies_to: both
+- applies_to: both
   finding_id: mdm-jailbroken-rooted-devices
   finding_title: Use of Jailbroken/Rooted Devices
+  section: compliance
+
   expected_answer: compliant
 
-  question: Are jailbroken or rooted devices permitted to access the environment?
+  question: Are jailbroken or rooted devices permitted to access the 
+    environment?
 
   description: >
     Jailbroken iOS devices or rooted Android devices were allowed to
@@ -106,309 +106,137 @@
     Jailbroken and rooted devices are permitted.
 
   hints:
-    intune: >
-      Devices > Compliance Policies > Device Health > Block Jailbroken or Rooted Devices
+    intune: Devices > Manage Devices > Compliance > Click target policy > 
+      Properties > Click Edit on Compliance settings > Device Health > 
+      Jailbroken or Rooted Devices
 
-    jamf: >
-      Mobile Devices > Smart Groups > Criteria > Jailbreak Detected
+- applies_to: both
+  finding_id: mdm-device-passcode-not-required
+  finding_title: Device Passcode Not Required
+  section: compliance
 
-    workspace_one: >
-      Devices > Profiles > Restrictions > Security Controls
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Settings > Android Security Controls
-
-- id: 3
-  applies_to: both
-  finding_id: mdm-inactive-device-compliance-policy
-  finding_title: Absence of Compliance Policy for Inactive Devices
   expected_answer: compliant
 
-  question: Is there an enforced compliance policy that addresses devices which have not connected to the environment for more than 60 days?
+  question: Is a device passcode required to unlock managed devices?
 
   description: >
-    Devices that have not checked in to the MDM platform for an extended
-    period were not automatically marked as non-compliant, increasing the
-    risk of unmanaged devices retaining access to corporate resources.
+    Managed devices were not required to use a passcode, PIN, or
+    password for device unlock, increasing the risk of unauthorised
+    access to corporate information.
 
   commentary: >
-    Devices that had not communicated with the MDM platform for an
-    extended period were not automatically marked as non-compliant.
-    Consequently, devices that are no longer actively managed may retain
-    access to corporate resources despite no longer receiving policy
-    updates or compliance validation. This may reduce organisational
-    visibility of managed devices and increase the risk of unmanaged
-    devices retaining access to corporate information.
+    Device authentication was not enforced across managed devices.
+    Without a passcode requirement, devices may be accessible to
+    unauthorised individuals if lost, stolen, or left unattended.
+    The absence of a mandatory unlock mechanism reduces the
+    effectiveness of controls intended to protect corporate
+    information stored on managed devices.
 
   solution: >
-    Configure device compliance policies to automatically mark devices
-    as non-compliant after a defined period of inactivity and revoke
-    access until they reconnect.
+    Configure compliance policies to require a passcode, PIN, or
+    password before managed devices can access corporate resources.
 
   positive: >
-    Devices that fail to check in within the defined period are
-    automatically marked as non-compliant.
+    Device authentication is enforced through mandatory passcode
+    requirements.
 
   good_value: >
-    Device inactivity automatically results in a non-compliant status.
+    A passcode is required to unlock managed devices.
 
   bad_value: >
-    Inactive devices remain compliant and retain access.
+    Devices can be unlocked without a passcode.
 
   hints:
-    intune: >
-      Devices > Compliance Policies > Device Properties > Mark Device Non-Compliant After Period Of Inactivity
+    intune: Devices > Compliance > Click target policy > Properties > Click 
+      Edit on Compliance settings > System Security > Require a password to 
+      unlock mobile devices
 
-    jamf: >
-      Mobile Devices > Smart Groups > Last Check-In Criteria
+- applies_to: both
+  finding_id: mdm-password-reuse-not-restricted
+  finding_title: Password Reuse Not Restricted
+  section: compliance
 
-    workspace_one: >
-      Devices > Compliance Policies > Device Health > Inactivity Rules
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Settings > Device Inactivity Rules
-
-- id: 4
-  applies_to: both
-  finding_id: mdm-remote-wipe-disabled
-  finding_title: Remote Wipe Not Enabled
   expected_answer: compliant
 
-  question: Is a remote wipe capability configured and enforced for managed devices?
+  question: Is password reuse prevented through password history controls?
 
   description: >
-    Remote wipe capability was not configured or available, increasing
-    the risk of corporate data remaining accessible on lost, stolen,
-    or compromised devices.
+    Password history controls were not enforced, allowing users to
+    reuse previously configured device passwords.
 
   commentary: >
-    Remote wipe functionality was not available or had not been configured
-    for managed devices. This capability is commonly relied upon to remove
-    corporate information from devices that are lost, stolen, compromised,
-    or retired. Without remote wipe functionality, the organisation may
-    have limited options for protecting information stored on devices that
-    are no longer under its direct control.
+    Managed devices were permitted to reuse previously configured
+    passwords. Password history controls help prevent users from
+    cycling between a small number of familiar passwords and
+    encourage the selection of new credentials when password changes
+    are required. The absence of such controls may reduce the
+    effectiveness of device authentication requirements.
 
   solution: >
-    Ensure remote wipe functionality is available for managed devices
-    and that documented procedures exist for its use when devices are
-    lost, stolen, or retired.
+    Configure password history settings to prevent the reuse of a
+    defined number of previously used passwords.
 
   positive: >
-    Remote wipe functionality is available and can be executed for
-    managed devices.
+    Password history controls prevent the reuse of previously used
+    authentication credentials.
 
   good_value: >
-    Remote wipe functionality is enabled and operational.
+    Password reuse is restricted through password history controls.
 
   bad_value: >
-    Remote wipe functionality is unavailable or not configured.
+    Previously used passwords may be reused.
 
   hints:
-    intune: >
-      Devices > Select Device > Remote Actions > Wipe
+    intune: Devices > Compliance > Click target policy > Properties > Click 
+      Edit on Compliance settings > System Security > Number of previous 
+      passwords to prevent reuse
 
-    jamf: >
-      Mobile Devices > Inventory > Select Device > Management > Remote Commands
+- applies_to: both
+  finding_id: mdm-excessive-screen-lock-timeout
+  finding_title: Excessive Screen Lock Timeout
+  section: compliance
 
-    workspace_one: >
-      Devices > List View > Select Device > More Actions > Enterprise Wipe
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Devices > Actions > Wipe Device
-
-- id: 5
-  applies_to: both
-  finding_id: mdm-unsafe-failed-login-wipe-threshold
-  finding_title: Unsafe Failed-Login Wipe Threshold
   expected_answer: compliant
 
-  question: Is the device configured to automatically wipe after a recommended number of failed authentication attempts (typically 5–10)?
+  question: Is the device configured to automatically lock after an appropriate 
+    period of inactivity?
 
   description: >
-    Devices were not configured to automatically erase data after a
-    defined number of failed authentication attempts, increasing the
-    risk of brute-force attacks on lost or stolen devices.
+    Managed devices were configured with an excessive screen lock
+    timeout or did not automatically require re-authentication after
+    a period of inactivity.
 
   commentary: >
-    Devices were not configured to erase data following a suitable number
-    of failed authentication attempts. This increases the opportunity for
-    repeated password or PIN guessing attempts against lost or stolen
-    devices and may reduce the effectiveness of controls intended to
-    protect sensitive information from unauthorised access.
+    Devices remained unlocked for prolonged periods when left
+    unattended. Extended inactivity timeouts increase the opportunity
+    for unauthorised individuals to access corporate information on
+    unattended devices and may reduce the effectiveness of device
+    authentication controls.
 
   solution: >
-    Configure devices to automatically wipe after a defined number of
-    failed authentication attempts in accordance with organisational
-    security requirements.
-
-  positive: >
-    Devices are configured to automatically wipe after repeated failed
-    authentication attempts.
-
-  good_value: >
-    Automatic wipe is configured following multiple failed login attempts.
-
-  bad_value: >
-    Automatic wipe is not configured.
-
-  hints:
-    intune: >
-      Devices > Compliance Policies > Device Properties > Failed Sign-In Attempts
-
-    jamf: >
-      Configuration Profiles > Passcode > Erase Device After Failed Attempts
-
-    workspace_one: >
-      Profiles > Passcode > Erase Data After Failed Attempts
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Settings > Passcode Policies
-
-- id: 6
-  applies_to: both
-  finding_id: mdm-biometric-authentication-disabled
-  finding_title: Biometric Authentication Disabled
-  expected_answer: compliant
-
-  question: Is biometric authentication (Face ID, Touch ID, Fingerprint) allowed?
-
-  description: >
-    Biometric authentication was disabled or restricted, forcing users
-    to rely solely on passwords or PINs for device access.
-
-  commentary: >
-    Biometric authentication methods were disabled or restricted on
-    managed devices. Modern biometric controls can assist organisations in
-    providing strong authentication while maintaining usability for end
-    users. Restricting their use may encourage continued reliance on
-    shorter or less complex authentication methods and reduce the overall
-    effectiveness of device access controls.
-
-  solution: >
-    Permit approved biometric authentication methods to improve
-    usability and encourage strong device authentication practices.
-
-  positive: >
-    Biometric authentication is permitted on managed devices.
-
-  good_value: >
-    Biometric authentication is enabled.
-
-  bad_value: >
-    Biometric authentication is disabled.
-
-  hints:
-    intune: >
-      Apps > App Protection Policies > iOs / Android > Access Requirements > Biometric Authentication
-
-    jamf: >
-      Configuration Profiles > Passcode and Restrictions
-
-    workspace_one: >
-      Profiles > Passcode and Restrictions
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Passcode Settings
-
-- id: 7
-  applies_to: both
-  finding_id: mdm-numeric-only-passwords-allowed
-  finding_title: Weak Numeric-Only Passwords Allowed
-  expected_answer: compliant
-
-  question: Are numeric-only device passwords allowed?
-
-  description: >
-    Numeric-only passwords were permitted, reducing the complexity and
-    strength of device authentication credentials.
-
-  commentary: >
-    Managed devices were permitted to use simple numeric-only passwords
-    for device authentication. Such passwords generally provide a lower
-    level of resistance to guessing and brute-force attacks than more
-    complex authentication methods. This may increase the likelihood of
-    unauthorised access in the event that a device is lost, stolen, or
-    accessed by an unauthorised individual.
-
-  solution: >
-    Require alphanumeric passwords to improve resistance against
-    brute-force and guessing attacks.
-
-  positive: >
-    Numeric-only passwords are prohibited and alphanumeric passwords
-    are required.
-
-  good_value: >
-    Numeric-only passwords are not permitted.
-
-  bad_value: >
-    Numeric-only passwords are permitted.
-
-  hints:
-    intune: >
-      Devices > Compliance Policies / App Protection > Password Settings > Require Alphanumeric Password
-
-    jamf: >
-      Configuration Profiles > Passcode > Require Alphanumeric Value
-
-    workspace_one: >
-      Profiles > Passcode > Alphanumeric Requirement
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Passcode Policies
-
-- id: 8
-  applies_to: both
-  finding_id: mdm-weak-minimum-password-length
-  finding_title: Weak Minimum Password Length
-  expected_answer: compliant
-
-  question: Is the minimum device password length set to at least 8 characters?
-
-  description: >
-    The configured minimum password length did not meet recommended
-    enterprise security standards and may be susceptible to brute-force
-    attacks.
-
-  commentary: >
-    The configured minimum password length did not align with recommended
-    enterprise security practices. Shorter passwords typically provide
-    reduced resistance to guessing, password cracking, and brute-force
-    attacks. As a result, the effectiveness of authentication controls
-    designed to protect managed devices and corporate information may be
-    reduced.
-
-  solution: >
-    Configure a minimum password length of eight or more characters in
+    Configure devices to automatically lock and require
+    re-authentication after an appropriate period of inactivity in
     accordance with organisational security requirements.
 
   positive: >
-    The configured password length meets recommended security standards.
+    Devices automatically lock after a suitable period of inactivity.
 
   good_value: >
-    Password length is set to at least eight characters.
+    Screen lock timeout values align with organisational security requirements.
 
   bad_value: >
-    Password length is less than eight characters.
+    Screen lock timeout values are excessively permissive.
 
   hints:
-    intune: >
-      Devices > Compliance Policies / App Protection > Password Settings > Minimum Password Length
+    intune: Devices > Compliance > Click target policy > Properties > Click 
+      Edit on Compliance settings > System Security > Maximum minutes of 
+      inactivity before password is required
 
-    jamf: >
-      Configuration Profiles > Passcode > Minimum Passcode Length
-
-    workspace_one: >
-      Profiles > Passcode > Minimum Length
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Passcode Policies
-
-- id: 9
-  applies_to: both
+- applies_to: both
   finding_id: mdm-untrusted-app-installation-allowed
   finding_title: Untrusted App Installation Allowed
+  section: compliance
+
   expected_answer: compliant
 
   question: Are applications allowed from untrusted or unknown sources?
@@ -439,375 +267,16 @@
     Unknown application sources are permitted.
 
   hints:
-    intune: >
-      iOS: App Protection / Open-in > Use Managed App Sources | Android: Device Restrictions > Unknown Sources (block)
-
-    jamf: >
-      Restrictions > Application Installation Controls
-
-    workspace_one: >
-      Restrictions > Application Source Controls
-
-    google_endpoint: >
-      Android Settings > Block Unknown Sources
-
-- id: 10
-  applies_to: both
-  finding_id: mdm-unrestricted-app-store-access
-  finding_title: Unrestricted App Store / Play Store Access
-  expected_answer: compliant
-
-  question: Is App Store / Google Play access restricted or controlled?
-
-  description: >
-    Users were able to install applications without organisational
-    oversight, increasing the risk of unapproved or vulnerable software.
-
-  commentary: >
-    Access to public application marketplaces was not restricted by the
-    MDM platform. As a result, users may be able to install applications
-    which have not been reviewed or approved by the organisation.
-    Unrestricted application installation may increase exposure to
-    vulnerable applications, unnecessary software, or applications which
-    introduce additional risks to corporate information.
-
-  solution: >
-    Restrict application marketplaces to approved applications and use
-    managed application stores where possible.
-
-  positive: >
-    Application marketplace access is controlled through approved
-    software catalogues and policies.
-
-  good_value: >
-    App marketplace access is controlled.
-
-  bad_value: >
-    App marketplace access is unrestricted.
-
-  hints:
-    intune: >
-      Managed Google Play / Apple VPP Application Management
-
-    jamf: >
-      App Catalog and Restrictions Policies
-
-    workspace_one: >
-      Managed Application Assignments
-
-    google_endpoint: >
-      Managed Google Play Application Controls
-
-- id: 11
-  applies_to: both
-  finding_id: mdm-default-system-apps-not-controlled
-  finding_title: Lack of Default/System App Control
-  expected_answer: compliant
-
-  question: Are default or system applications controlled and documented?
-
-  description: >
-    Default and system applications were not governed by documented
-    policy, resulting in inconsistent security baselines across devices.
-
-  commentary: >
-    Default and system applications were not governed by a documented or
-    enforced policy. Consequently, applications with varying security
-    implications may remain available to users without formal review or
-    justification. The absence of consistent application governance may
-    result in variations in security posture across managed devices.
-
-  solution: >
-    Define approved default applications and disable, restrict, or
-    document unnecessary built-in applications.
-
-  positive: >
-    Default and system applications are controlled and documented.
-
-  good_value: >
-    Default applications are managed and documented.
-
-  bad_value: >
-    Default applications are unmanaged.
-
-  hints:
-    intune: >
-      Device Restrictions > Default Applications
-
-    jamf: >
-      Configuration Profiles > Restrictions > Applications
-
-    workspace_one: >
-      Profiles > Restrictions > Default Applications
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > App Settings
-
-# iOS Controls (Q12-Q14)
-
-- id: 12
-  applies_to: ios
-  finding_id: mdm-unrestricted-ios-data-sharing
-  finding_title: Unrestricted Data Sharing on iOS Devices
-  expected_answer: compliant
-
-  question: Is managed Open-In / sharing configured to prevent corporate data from being transferred to personal applications?
-
-  description: >
-    Corporate data could be transferred from managed applications to
-    personal applications, increasing the risk of data leakage and
-    unauthorised disclosure of sensitive information.
-
-  commentary: >
-    Controls designed to restrict the transfer of corporate information
-    between managed and unmanaged applications were not configured.
-    Consequently, users may be able to move information outside approved
-    management boundaries and into personal applications or services.
-    This increases the likelihood of information leakage and may reduce
-    organisational control over sensitive data.
-
-  solution: >
-    Configure Managed Open-In restrictions and data-sharing controls
-    to ensure corporate data can only be opened within approved
-    managed applications.
-
-  positive: >
-    Managed Open-In restrictions are configured to prevent corporate
-    data from being transferred to personal applications.
-
-  good_value: >
-    Corporate data can only be shared with approved managed applications.
-
-  bad_value: >
-    Corporate data can be transferred to personal applications.
-
-  hints:
-    intune: >
-      Apps > App Protection Policies (iOS) > Data Protection >
-      Send Org Data To Other Apps
-
-    jamf: >
-      Configuration Profiles > Restrictions >
-      Managed Open In / Managed Domains
-
-    workspace_one: >
-      Profiles > iOS > Restrictions >
-      Data Loss Prevention (Open-In, Sharing)
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Settings > iOS >
-      Data Sharing Controls
-
-- id: 13
-  applies_to: ios
-  finding_id: mdm-usb-accessories-allowed-while-locked
-  finding_title: USB Accessories Allowed While Locked (iOS Devices)
-  expected_answer: compliant
-
-  question: Are USB accessories blocked while the device is locked (USB Restricted Mode)?
-
-  description: >
-    USB accessories could connect to devices while locked, increasing
-    the risk of physical attacks, forensic extraction attempts,
-    and exploitation through external accessories.
-
-  commentary: >
-    USB accessories were permitted to communicate with managed devices
-    while the device remained locked. This functionality may increase
-    exposure to physical attacks, forensic extraction attempts, or
-    exploitation through connected accessories. Restricting USB accessory
-    access while devices are locked provides an additional layer of
-    protection against unauthorised physical access.
-
-  solution: >
-    Enable USB Restricted Mode across managed iOS devices to prevent
-    USB accessories from communicating with devices while locked.
-
-  positive: >
-    USB Restricted Mode is enabled on managed iOS devices.
-
-  good_value: >
-    USB accessories are blocked while the device is locked.
-
-  bad_value: >
-    USB accessories are permitted while the device is locked.
-
-  hints:
-    intune: >
-      Device Restrictions > General >
-      Allow USB Accessories While Locked = Block
-
-    jamf: >
-      Configuration Profiles > Restrictions > Security >
-      Allow USB Accessories When Locked = Disabled
-
-    workspace_one: >
-      iOS Restrictions >
-      USB Restricted Mode = Enabled
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Settings > iOS >
-      Security Restrictions
-
-- id: 14
-  applies_to: ios
-  finding_id: mdm-ios-host-pairing-allowed
-  finding_title: Unrestricted iOS Host Pairing
-  expected_answer: compliant
-
-  question: Is pairing with new hosts (iTunes/Finder) blocked for managed devices?
-
-  description: >
-    Devices were permitted to pair with new hosts, which may allow
-    unauthorised computers to establish trust relationships and
-    facilitate data extraction from managed devices.
-
-  commentary: >
-    Managed iOS devices were permitted to establish trust relationships
-    with new host computers. Once a trusted host relationship is created,
-    users or third parties may be able to interact with device data
-    through the paired system. Restricting host pairing helps reduce the
-    likelihood of unauthorised access to information stored on or
-    accessible from managed devices.
-
-  solution: >
-    Disable host pairing on managed devices to prevent users from
-    establishing trust relationships with unauthorised computers.
-
-  positive: >
-    Host pairing is restricted, preventing managed devices from
-    pairing with unauthorised computers.
-
-  good_value: >
-    New host pairing is blocked.
-
-  bad_value: >
-    New host pairing is permitted.
-
-  hints:
-    intune: >
-      Device Restrictions > General >
-      Allow Host Pairing = Block
-
-    jamf: >
-      Configuration Profiles > Restrictions >
-      Disable Host Pairing
-
-    workspace_one: >
-      iOS Restrictions >
-      Allow Host Pairing = Disabled
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Settings > iOS >
-      Host Pairing Restrictions
-
-# Android Controls (Q15-Q19)
-
-- id: 15
-  applies_to: android
-  finding_id: mdm-developer-mode-enabled
-  finding_title: Developer Mode Enabled
-  expected_answer: compliant
-
-  question: Is Developer Mode enabled on managed Android devices?
-
-  description: >
-    Developer Mode was enabled on managed Android devices, increasing
-    the risk of unauthorised access, policy bypass, device tampering,
-    and exposure of sensitive corporate data.
-
-  commentary: >
-    Developer mode was enabled or permitted on managed Android devices.
-    While intended for development and testing activities, developer mode
-    exposes additional functionality and configuration options which are
-    generally unnecessary for production devices. Its use may weaken
-    device security controls and increase the risk of device
-    misconfiguration or misuse.
-
-  solution: >
-    Disable Developer Mode through Android device restrictions to
-    reduce the risk of unauthorised access and compromise of managed
-    devices.
-
-  positive: >
-    Developer Mode is disabled on managed Android devices.
-
-  good_value: >
-    Developer Mode is disabled.
-
-  bad_value: >
-    Developer Mode is enabled.
-
-  hints:
-    intune: >
-      Devices > Configuration Profiles >
-      Device Restrictions > Developer Options
-
-    jamf: >
-      N/A (Jamf Pro is Apple-focused)
-
-    workspace_one: >
-      Devices > Profiles > Android >
-      Restrictions > Developer Options
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Settings > Android >
-      Disable Developer Options
-
-- id: 16
-  applies_to: android
-  finding_id: mdm-android-swipe-pattern-passwords-allowed
-  finding_title: Weak Android Swipe Pattern Passwords Allowed
-  expected_answer: compliant
-
-  question: Are swipe pattern passwords allowed on managed Android devices?
-
-  description: >
-    Swipe pattern passwords were permitted, providing weaker protection
-    than complex passcodes and increasing the risk of compromise through
-    observation attacks and pattern residue analysis.
-
-  commentary: >
-    Android swipe-pattern authentication was permitted as a device access
-    mechanism. Swipe patterns typically provide less resistance to
-    observation, guessing, and recovery techniques than stronger
-    authentication methods. Continued use of swipe patterns may reduce
-    assurance that device authentication controls provide an appropriate
-    level of protection for corporate information.
-
-  solution: >
-    Disable swipe pattern authentication and require stronger
-    authentication methods such as PINs, passwords, or biometrics.
-
-  positive: >
-    Swipe pattern passwords are disabled on managed Android devices.
-
-  good_value: >
-    Swipe pattern passwords are not permitted.
-
-  bad_value: >
-    Swipe pattern passwords are permitted.
-
-  hints:
-    intune: >
-      Devices > Android > Configuration Profiles >
-      Password Settings > Disallow Pattern Unlock
-
-    jamf: >
-      N/A (Jamf Pro is Apple-focused)
-
-    workspace_one: >
-      Devices > Profiles > Android >
-      Passcode > Disable Pattern Unlock
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Settings >
-      Password Quality > Disallow Pattern Unlock
-
-- id: 17
-  applies_to: android
+    intune: Devices > Compliance > Click on target policy >  Properties > Click 
+      Edit on Compliance settings > System Security > Block apps from unknown 
+      sources
+
+# Android-Only
+- applies_to: android
   finding_id: mdm-unencrypted-android-devices
   finding_title: Unencrypted Android Devices Allowed
+  section: compliance
+
   expected_answer: compliant
 
   question: Is device encryption enforced for managed Android devices?
@@ -839,77 +308,15 @@
     Unencrypted devices are permitted.
 
   hints:
-    intune: >
-      Devices > Android > Compliance Policies >
-      Device Security > Encryption
+    intune: Devices > Compliance > Click on target policy > Properties > Click 
+      Edit on Compliance settings > System Security > Require encryption of 
+      data storage on device
 
-    jamf: >
-      N/A (Jamf Pro is Apple-focused)
-
-    workspace_one: >
-      Devices > Compliance Policies >
-      Android Security Settings > Encryption Required
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Settings > Android >
-      Require Device Encryption
-
-- id: 18
-  applies_to: android
-  finding_id: mdm-unencrypted-sd-cards
-  finding_title: Unencrypted SD Cards Allowed (Android)
-  expected_answer: compliant
-
-  question: Are SD cards encrypted, or alternatively blocked from use?
-
-  description: >
-    Removable storage devices were permitted without encryption controls,
-    increasing the risk of data leakage and unauthorised access to
-    corporate information stored on external media.
-
-  commentary: >
-    Removable storage devices were permitted without encryption
-    requirements. Information stored on removable media can typically be
-    removed from the device and accessed independently if appropriate
-    protections are not in place. This may increase the risk of
-    unauthorised disclosure of corporate information stored on external
-    storage.
-
-  solution: >
-    Require SD card encryption wherever removable storage is permitted,
-    or block the use of external storage entirely where encryption cannot
-    be enforced.
-
-  positive: >
-    External storage is either encrypted or prohibited on managed Android
-    devices.
-
-  good_value: >
-    SD cards are encrypted or blocked.
-
-  bad_value: >
-    SD cards are permitted without encryption.
-
-  hints:
-    intune: >
-      Devices > Android > Configuration Profiles >
-      Storage Restrictions
-
-    jamf: >
-      N/A (Jamf Pro is Apple-focused)
-
-    workspace_one: >
-      Devices > Profiles > Android >
-      Storage and Removable Media Restrictions
-
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Settings > Android >
-      External Storage Controls
-
-- id: 19
-  applies_to: android
+- applies_to: android
   finding_id: mdm-usb-debugging-enabled
   finding_title: USB Debugging Enabled (Android)
+  section: compliance
+
   expected_answer: compliant
 
   question: Is USB debugging allowed on managed Android devices?
@@ -942,17 +349,603 @@
     USB debugging is enabled.
 
   hints:
-    intune: >
-      Devices > Android > Configuration Profiles >
-      Developer Options > USB Debugging
+    intune: Devices > Compliance > Click on target policy >  Properties > Click 
+      Edit on Compliance settings > System Security > Block USB debugging on 
+      device
 
-    jamf: >
-      N/A (Jamf Pro is Apple-focused)
+# ------------------------------------------------------------------------------
+# Configuration
+# ------------------------------------------------------------------------------
 
-    workspace_one: >
-      Devices > Profiles > Android >
-      Developer Options > USB Debugging
+- applies_to: both
+  finding_id: mdm-unsafe-failed-login-wipe-threshold
+  finding_title: Unsafe Failed-Login Wipe Threshold
+  section: configuration
 
-    google_endpoint: >
-      Devices > Mobile & Endpoints > Settings > Android >
-      Disable USB Debugging
+  expected_answer: compliant
+
+  question: Is the device configured to automatically wipe after a recommended 
+    number of failed authentication attempts (typically 5–10)?
+
+  description: >
+    Devices were not configured to automatically erase data after a
+    defined number of failed authentication attempts, increasing the
+    risk of brute-force attacks on lost or stolen devices.
+
+  commentary: >
+    Devices were not configured to erase data following a suitable number
+    of failed authentication attempts. This increases the opportunity for
+    repeated password or PIN guessing attempts against lost or stolen
+    devices and may reduce the effectiveness of controls intended to
+    protect sensitive information from unauthorised access.
+
+  solution: >
+    Configure devices to automatically wipe after a defined number of
+    failed authentication attempts in accordance with organisational
+    security requirements.
+
+  positive: >
+    Devices are configured to automatically wipe after repeated failed
+    authentication attempts.
+
+  good_value: >
+    Automatic wipe is configured following multiple failed login attempts.
+
+  bad_value: >
+    Automatic wipe is not configured.
+
+  hints:
+    intune: Devices > Manage Devices > Configuration > Click target policy > 
+      Click Edit on Configuration Settings > Password > Number of sign-in 
+      failures before wiping device
+
+- applies_to: both
+  finding_id: mdm-biometric-authentication-disabled
+  finding_title: Biometric Authentication Disabled
+  section: configuration
+
+  expected_answer: compliant
+
+  question: Is biometric authentication allowed?
+
+  description: >
+    Biometric authentication was disabled or restricted, forcing users
+    to rely solely on passwords or PINs for device access.
+
+  commentary: >
+    Biometric authentication methods were disabled or restricted on
+    managed devices. Modern biometric controls can assist organisations in
+    providing strong authentication while maintaining usability for end
+    users. Restricting their use may encourage continued reliance on
+    shorter or less complex authentication methods and reduce the overall
+    effectiveness of device access controls.
+
+  solution: >
+    Permit approved biometric authentication methods to improve
+    usability and encourage strong device authentication practices.
+
+  positive: >
+    Biometric authentication is permitted on managed devices.
+
+  good_value: >
+    Biometric authentication is enabled.
+
+  bad_value: >
+    Biometric authentication is disabled.
+
+  hints:
+    ios: Devices > Manage Devices > Configuration > Click target policy > Click 
+      Edit on Configuration Settings > Password > Block Touch ID and Face ID 
+      unlock
+    android: Devices > Manage Devices > Configuration > Click target policy > 
+      Click Edit on Configuration Settings > Password > Password complexity
+
+- applies_to: both
+  finding_id: mdm-numeric-only-passwords-allowed
+  finding_title: Weak Numeric-Only Passwords Allowed
+  section: configuration
+
+  expected_answer: compliant
+
+  question: Are numeric-only device passwords allowed?
+
+  description: >
+    Numeric-only passwords were permitted, reducing the complexity and
+    strength of device authentication credentials.
+
+  commentary: >
+    Managed devices were permitted to use simple numeric-only passwords
+    for device authentication. Such passwords generally provide a lower
+    level of resistance to guessing and brute-force attacks than more
+    complex authentication methods. This may increase the likelihood of
+    unauthorised access in the event that a device is lost, stolen, or
+    accessed by an unauthorised individual.
+
+  solution: >
+    Require alphanumeric passwords to improve resistance against
+    brute-force and guessing attacks.
+
+  positive: >
+    Numeric-only passwords are prohibited and alphanumeric passwords
+    are required.
+
+  good_value: >
+    Numeric-only passwords are not permitted.
+
+  bad_value: >
+    Numeric-only passwords are permitted.
+
+  hints:
+    intune: Devices > Manage Devices > Configuration > Click target policy > 
+      Click Edit on Configuration Settings > Device Password > Required 
+      password type
+
+- applies_to: both
+  finding_id: mdm-weak-minimum-password-length
+  finding_title: Weak Minimum Password Length
+  section: configuration
+
+  expected_answer: compliant
+
+  question: Is the minimum device password length set to at least 8 characters?
+
+  description: >
+    The configured minimum password length did not meet recommended
+    enterprise security standards and may be susceptible to brute-force
+    attacks.
+
+  commentary: >
+    The configured minimum password length did not align with recommended
+    enterprise security practices. Shorter passwords typically provide
+    reduced resistance to guessing, password cracking, and brute-force
+    attacks. As a result, the effectiveness of authentication controls
+    designed to protect managed devices and corporate information may be
+    reduced.
+
+  solution: >
+    Configure a minimum password length of eight or more characters in
+    accordance with organisational security requirements.
+
+  positive: >
+    The configured password length meets recommended security standards.
+
+  good_value: >
+    Password length is set to at least eight characters.
+
+  bad_value: >
+    Password length is less than eight characters.
+
+  hints:
+    intune: Devices > Manage Devices > Configuration > Click target policy > 
+      Click Edit on Configuration Settings > Password > Minimum password length
+
+- applies_to: both
+  finding_id: mdm-unrestricted-app-store-access
+  finding_title: Unrestricted App Store / Play Store Access
+  section: configuration
+
+  expected_answer: compliant
+
+  question: Is App Store / Google Play access restricted or controlled?
+
+  description: >
+    Users were able to install applications without organisational
+    oversight, increasing the risk of unapproved or vulnerable software.
+
+  commentary: >
+    Access to public application marketplaces was not restricted by the
+    MDM platform. As a result, users may be able to install applications
+    which have not been reviewed or approved by the organisation.
+    Unrestricted application installation may increase exposure to
+    vulnerable applications, unnecessary software, or applications which
+    introduce additional risks to corporate information.
+
+  solution: >
+    Restrict application marketplaces to approved applications and use
+    managed application stores where possible.
+
+  positive: >
+    Application marketplace access is controlled through approved
+    software catalogues and policies.
+
+  good_value: >
+    App marketplace access is controlled.
+
+  bad_value: >
+    App marketplace access is unrestricted.
+
+  hints:
+    ios: Devices > Manage Devices > Configuration > Click target policy > Click 
+      Edit on Configuration Settings > App Store, Doc Viewing, Gaming > Block 
+      App store / Block installing apps using App Store
+    android: Devices > Manage Devices > Configuration > Click target policy > 
+      Click Edit on Configuration Settings > Applications > Allow access to all 
+      apps in Google Play store (work profile-level)
+
+# Android-Only
+- applies_to: android
+  finding_id: mdm-developer-mode-enabled
+  finding_title: Developer Mode Enabled
+  section: configuration
+
+  expected_answer: compliant
+
+  question: Is Developer Mode enabled on managed Android devices?
+
+  description: >
+    Developer Mode was enabled on managed Android devices, increasing
+    the risk of unauthorised access, policy bypass, device tampering,
+    and exposure of sensitive corporate data.
+
+  commentary: >
+    Developer mode was enabled or permitted on managed Android devices.
+    While intended for development and testing activities, developer mode
+    exposes additional functionality and configuration options which are
+    generally unnecessary for production devices. Its use may weaken
+    device security controls and increase the risk of device
+    misconfiguration or misuse.
+
+  solution: >
+    Disable Developer Mode through Android device restrictions to
+    reduce the risk of unauthorised access and compromise of managed
+    devices.
+
+  positive: >
+    Developer Mode is disabled on managed Android devices.
+
+  good_value: >
+    Developer Mode is disabled.
+
+  bad_value: >
+    Developer Mode is enabled.
+
+  hints:
+    intune: Devices > Manage Devices > Configuration > Click target policy > 
+      Click Edit on Configuration Settings > General > Developer Settings
+
+- applies_to: android
+  finding_id: mdm-android-swipe-pattern-passwords-allowed
+  finding_title: Weak Android Swipe Pattern Passwords Allowed
+  section: configuration
+
+  expected_answer: compliant
+
+  question: Are swipe pattern passwords allowed on managed Android devices?
+
+  description: >
+    Swipe pattern passwords were permitted, providing weaker protection
+    than complex passcodes and increasing the risk of compromise through
+    observation attacks and pattern residue analysis.
+
+  commentary: >
+    Android swipe-pattern authentication was permitted as a device access
+    mechanism. Swipe patterns typically provide less resistance to
+    observation, guessing, and recovery techniques than stronger
+    authentication methods. Continued use of swipe patterns may reduce
+    assurance that device authentication controls provide an appropriate
+    level of protection for corporate information.
+
+  solution: >
+    Disable swipe pattern authentication and require stronger
+    authentication methods such as PINs, passwords, or biometrics.
+
+  positive: >
+    Swipe pattern passwords are disabled on managed Android devices.
+
+  good_value: >
+    Swipe pattern passwords are not permitted.
+
+  bad_value: >
+    Swipe pattern passwords are permitted.
+
+  hints:
+    intune: Devices > Manage Devices > Configuration > Click target policy > 
+      Click Edit on Configuration Settings > Device Password > Password 
+      Complexity
+
+- applies_to: android
+  finding_id: mdm-unrestricted-external-media
+  finding_title: Unrestricted External Media Usage
+  section: configuration
+
+  expected_answer: compliant
+
+  question: Is the use of external media restricted on managed Android devices?
+
+  description: >
+    Removable storage devices were permitted without encryption controls,
+    increasing the risk of data leakage and unauthorised access to
+    corporate information stored on external media.
+
+  commentary: >
+    Removable storage devices were permitted without encryption
+    requirements. Information stored on removable media can typically be
+    removed from the device and accessed independently if appropriate
+    protections are not in place. This may increase the risk of
+    unauthorised disclosure of corporate information stored on external
+    storage.
+
+  solution: >
+    Require SD card encryption wherever removable storage is permitted,
+    or block the use of external storage entirely where encryption cannot
+    be enforced.
+
+  positive: >
+    External storage is either encrypted or prohibited on managed Android
+    devices.
+
+  good_value: >
+    SD cards are encrypted or blocked.
+
+  bad_value: >
+    SD cards are permitted without encryption.
+
+  hints:
+    intune: Devices > Manage Devices > Configuration > Click target policy > 
+      Click Edit on Configuration Settings > General > External Media
+
+# iOS-Only
+- applies_to: ios
+  finding_id: mdm-usb-accessories-allowed-while-locked
+  finding_title: USB Accessories Allowed While Locked
+  section: configuration
+
+  expected_answer: compliant
+
+  question: Are USB accessories blocked while the device is locked 
+    (USB Restricted Mode)?
+
+  description: >
+    USB accessories could connect to devices while locked, increasing
+    the risk of physical attacks, forensic extraction attempts,
+    and exploitation through external accessories.
+
+  commentary: >
+    USB accessories were permitted to communicate with managed devices
+    while the device remained locked. This functionality may increase
+    exposure to physical attacks, forensic extraction attempts, or
+    exploitation through connected accessories. Restricting USB accessory
+    access while devices are locked provides an additional layer of
+    protection against unauthorised physical access.
+
+  solution: >
+    Enable USB Restricted Mode across managed iOS devices to prevent
+    USB accessories from communicating with devices while locked.
+
+  positive: >
+    USB Restricted Mode is enabled on managed iOS devices.
+
+  good_value: >
+    USB accessories are blocked while the device is locked.
+
+  bad_value: >
+    USB accessories are permitted while the device is locked.
+
+  hints:
+    intune: Devices > Manage Devices > Configuration > Click target policy > 
+      Click Edit on Configuration Settings > General > Allow USB accessories 
+      while device is locked
+
+- applies_to: ios
+  finding_id: mdm-ios-host-pairing-allowed
+  finding_title: Unrestricted iOS Host Pairing
+  section: configuration
+
+  expected_answer: compliant
+
+  question: Is pairing with new hosts (iTunes/Finder) blocked for managed 
+    devices?
+
+  description: >
+    Devices were permitted to pair with new hosts, which may allow
+    unauthorised computers to establish trust relationships and
+    facilitate data extraction from managed devices.
+
+  commentary: >
+    Managed iOS devices were permitted to establish trust relationships
+    with new host computers. Once a trusted host relationship is created,
+    users or third parties may be able to interact with device data
+    through the paired system. Restricting host pairing helps reduce the
+    likelihood of unauthorised access to information stored on or
+    accessible from managed devices.
+
+  solution: >
+    Disable host pairing on managed devices to prevent users from
+    establishing trust relationships with unauthorised computers.
+
+  positive: >
+    Host pairing is restricted, preventing managed devices from
+    pairing with unauthorised computers.
+
+  good_value: >
+    New host pairing is blocked.
+
+  bad_value: >
+    New host pairing is permitted.
+
+  hints:
+    intune: Devices > Manage Devices > Configuration > Click target policy > 
+      Click Edit on Configuration Settings > Connected Devices > Block pairing 
+      with non-Configurator hosts
+
+- applies_to: ios
+  finding_id: mdm-ios-screen-capture-allowed
+  finding_title: Screen Capture Permitted on Managed iOS Devices
+  section: configuration
+
+  expected_answer: compliant
+
+  question: Are screenshots and screen recordings blocked or appropriately 
+    restricted on managed iOS devices?
+
+  description: >
+    Screenshots and screen recordings were permitted on managed iOS
+    devices, increasing the risk of unauthorised disclosure of
+    corporate information.
+
+  commentary: >
+    Users were permitted to capture screenshots and screen recordings
+    of information displayed within managed applications. Such
+    functionality may allow sensitive corporate information to be
+    retained, shared, or transferred outside approved management
+    controls, increasing the risk of unauthorised disclosure.
+
+  solution: >
+    Restrict screenshots and screen recordings where appropriate to
+    reduce the risk of sensitive corporate information being copied
+    or disclosed outside managed applications.
+
+  positive: >
+    Screen capture functionality is appropriately restricted on
+    managed iOS devices.
+
+  good_value: >
+    Screenshots and screen recordings are restricted.
+
+  bad_value: >
+    Screenshots and screen recordings are permitted.
+
+  hints:
+    intune: Devices > Manage Devices > Configuration > Click target policy > 
+      Click Edit on Configuration Settings > General > Block screenshots and 
+      screen recording
+
+# ------------------------------------------------------------------------------
+# App Protection
+# ------------------------------------------------------------------------------
+
+- applies_to: both
+  finding_id: mdm-unrestricted-data-sharing
+  finding_title: Unrestricted Managed Application Data Sharing
+  section: app_protection
+
+  expected_answer: compliant
+
+  question: Is managed Open-In/sharing (iOS) or policy managed apps (Android) 
+    configured to prevent corporate data from being transferred to personal 
+    applications?
+
+  description: >
+    Corporate data could be transferred from managed applications to
+    personal applications, increasing the risk of data leakage and
+    unauthorised disclosure of sensitive information.
+
+  commentary: >
+    Controls designed to restrict the transfer of corporate information
+    between managed and unmanaged applications were not configured.
+    Consequently, users may be able to move information outside approved
+    management boundaries and into personal applications or services.
+    This increases the likelihood of information leakage and may reduce
+    organisational control over sensitive data.
+
+  solution: >
+    Configure Managed Open-In restrictions and data-sharing controls
+    to ensure corporate data can only be opened within approved
+    managed applications.
+
+  positive: >
+    Managed Open-In restrictions are configured to prevent corporate
+    data from being transferred to personal applications.
+
+  good_value: >
+    Corporate data can only be shared with approved managed applications.
+
+  bad_value: >
+    Corporate data can be transferred to personal applications.
+
+  hints:
+    intune: Apps > Manage Apps > Protection > Select target policy > Properties 
+      > Data Protection > Send org data to other apps
+
+# ------------------------------------------------------------------------------
+# Clean-Up Rules
+# ------------------------------------------------------------------------------
+
+- applies_to: both
+  finding_id: mdm-inactive-device-compliance-policy
+  finding_title: Absence of Compliance Policy for Inactive Devices
+  section: cleanup_rules
+
+  expected_answer: compliant
+
+  question: Is there an enforced compliance policy that addresses devices which 
+    have not connected to the environment for more than 60 days?
+
+  description: >
+    Devices that have not checked in to the MDM platform for an extended
+    period were not automatically marked as non-compliant, increasing the
+    risk of unmanaged devices retaining access to corporate resources.
+
+  commentary: >
+    Devices that had not communicated with the MDM platform for an
+    extended period were not automatically marked as non-compliant.
+    Consequently, devices that are no longer actively managed may retain
+    access to corporate resources despite no longer receiving policy
+    updates or compliance validation. This may reduce organisational
+    visibility of managed devices and increase the risk of unmanaged
+    devices retaining access to corporate information.
+
+  solution: >
+    Configure device compliance policies to automatically mark devices
+    as non-compliant after a defined period of inactivity and revoke
+    access until they reconnect.
+
+  positive: >
+    Devices that fail to check in within the defined period are
+    automatically marked as non-compliant.
+
+  good_value: >
+    Device inactivity automatically results in a non-compliant status.
+
+  bad_value: >
+    Inactive devices remain compliant and retain access.
+
+  hints:
+    intune: Devices > Organize devices > Device clean-up rules > Click target 
+      rule > Check Rule settings
+
+# ------------------------------------------------------------------------------
+# Device Actions
+# ------------------------------------------------------------------------------
+
+- applies_to: both
+  finding_id: mdm-remote-wipe-disabled
+  finding_title: Remote Wipe Not Enabled
+  section: device_actions
+
+  expected_answer: compliant
+
+  question: Is a remote wipe capability configured and enforced for managed 
+    devices?
+
+  description: >
+    Remote wipe capability was not configured or available, increasing
+    the risk of corporate data remaining accessible on lost, stolen,
+    or compromised devices.
+
+  commentary: >
+    Remote wipe functionality was not available or had not been configured
+    for managed devices. This capability is commonly relied upon to remove
+    corporate information from devices that are lost, stolen, compromised,
+    or retired. Without remote wipe functionality, the organisation may
+    have limited options for protecting information stored on devices that
+    are no longer under its direct control.
+
+  solution: >
+    Ensure remote wipe functionality is available for managed devices
+    and that documented procedures exist for its use when devices are
+    lost, stolen, or retired.
+
+  positive: >
+    Remote wipe functionality is available and can be executed for
+    managed devices.
+
+  good_value: >
+    Remote wipe functionality is enabled and operational.
+
+  bad_value: >
+    Remote wipe functionality is unavailable or not configured.
+
+  hints:
+    intune: Devices > Android / Apple mobile > Select a device > Overview > 
+      Remote Actions > Wipe (factory reset)

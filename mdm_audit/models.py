@@ -54,9 +54,6 @@ class Vendor(str, Enum):
     used throughout the application.
     """
     INTUNE = "Microsoft Intune"
-    JAMF = "Jamf Pro"
-    WORKSPACE_ONE = "Omnissa Workspace ONE"
-    GOOGLE_ENDPOINT = "Google Endpoint Management"
     OTHER = "Other"
 
 
@@ -156,7 +153,7 @@ class QuestionResponse(BaseModel):
     positive observations, reports, and future analytics.
     """
 
-    question_id: int
+    finding_id: str
 
     platform: Platform
 
@@ -173,10 +170,9 @@ class VendorHints(BaseModel):
     """
 
     common: str | None = None
-    intune: str
-    jamf: str
-    workspace_one: str
-    google_endpoint: str
+    ios: str | None = None
+    android: str | None = None
+    intune: str | None = None
 
 
 class Question(BaseModel):
@@ -195,12 +191,12 @@ class Question(BaseModel):
     exclusively within the YAML configuration rather than
     hard-coded within the application.
     """
-
-    id: int
+    
     applies_to: Platform
 
     finding_id: str
     finding_title: str
+    section: str
 
     expected_answer: AuditAnswer
 
