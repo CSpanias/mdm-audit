@@ -645,40 +645,43 @@
 
 - applies_to: android
   finding_id: mdm-unrestricted-external-media
-  finding_title: Unrestricted External Media Usage
+  finding_title: Unrestricted External Storage Usage
   section: configuration
 
   expected_answer: compliant
 
-  question: Is the use of external media restricted on managed Android devices?
+  question: Is the use of external or removable storage appropriately 
+    restricted on managed Android devices?
 
   description: >
-    Removable storage devices were permitted without encryption controls,
-    increasing the risk of data leakage and unauthorised access to
-    corporate information stored on external media.
+    Removable or external storage devices were permitted without
+    appropriate restrictions, increasing the risk of data leakage and
+    unauthorised access to corporate information.
 
   commentary: >
-    Removable storage devices were permitted without encryption
-    requirements. Information stored on removable media can typically be
-    removed from the device and accessed independently if appropriate
-    protections are not in place. This may increase the risk of
-    unauthorised disclosure of corporate information stored on external
-    storage.
+    Managed Android devices were permitted to use removable or
+    externally attached storage without sufficient security controls.
+    Information copied to external storage may not be subject to the
+    same protections applied to data stored within managed applications
+    or on the device itself. This may increase the risk of unauthorised
+    disclosure, uncontrolled data transfer, or loss of corporate
+    information.
 
   solution: >
-    Require SD card encryption wherever removable storage is permitted,
-    or block the use of external storage entirely where encryption cannot
-    be enforced.
+    Restrict or disable the use of removable and external storage where
+    operationally feasible. Where external storage is required, ensure
+    appropriate security controls such as encryption are enforced in
+    accordance with organisational security requirements.
 
   positive: >
-    External storage is either encrypted or prohibited on managed Android
-    devices.
+    Appropriate controls are in place to restrict or secure the use of
+    removable and external storage on managed Android devices.
 
   good_value: >
-    SD cards are encrypted or blocked.
+    External storage is appropriately restricted or secured.
 
   bad_value: >
-    SD cards are permitted without encryption.
+    External storage usage is unrestricted or inadequately controlled.
 
   hints:
     intune: Devices > Manage Devices > Configuration > Click target policy > 

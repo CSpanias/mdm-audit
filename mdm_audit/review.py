@@ -14,6 +14,8 @@ export functionality to ensure the assessment logic remains
 independent from output formats.
 """
 
+from rich.panel import Panel
+
 from mdm_audit.models import (
     AssessmentResults,
     AuditAnswer,
@@ -60,59 +62,6 @@ def get_applicable_questions(
     return applicable_questions
 
 
-def get_applicable_context_fields(
-    fields: list[ContextField],
-    platforms: list[Platform],
-) -> list[ContextField]:
-    """
-    Return the context fields applicable to the selected platforms.
-
-    Platform-specific fields are filtered according to the review
-    scope and returned in display order for collection during the
-    assessment setup phase.
-    """
-
-    applicable_fields = []
-
-    for field in fields:
-        if any(platform in field.platforms for platform in platforms):
-            applicable_fields.append(field)
-
-    return sorted(applicable_fields, key=lambda field: field.order)
-
-
-def select_platforms() -> list[Platform]:
-    """
-    Prompt the assessor to define the assessment scope.
-
-    The selected platforms determine which context fields and
-    assessment questions will be included in the review.
-    """
-
-
-    console.print()
-    console.print("[bold]Which mobile platforms are being reviewed?[/bold]")
-    console.print("1. iOS and Android")
-    console.print("2. iOS only")
-    console.print("3. Android only")
-
-    while True:
-        choice = input("> ").strip()
-
-        match choice:
-            case "1":
-                return [Platform.IOS, Platform.ANDROID]
-
-            case "2":
-                return [Platform.IOS]
-
-            case "3":
-                return [Platform.ANDROID]
-
-            case _:
-                console.print("[red]Invalid selection.[/red]")
-
-
 def collect_context(
     fields: list[ContextField],
 ) -> ReviewContext:
@@ -127,12 +76,59 @@ def collect_context(
 
     responses = {}
 
-    for field in fields:
+    total = len(fields)
+
+    for current, field in enumerate(fields, start=1):
+
+        progress = max(1, int((current / total) * 20))
+
+        bar = (
+            f"[green]{'█' * progress}[/green]"
+            f"[dim]{'░' * (20 - progress)}[/dim]"
+        )
 
         console.print()
+        console.print(
+            f"[bold cyan][CONTEXT {current}/{total}][/bold cyan] "
+            f"{bar} "
+            f"[bold]{field.label}[/bold]"
+        )
+
+        vendor = responses.get("mdm_vendor")
+
+        if field.hints:
+
+            common_hint = field.hints.get("common")
+
+            if common_hint:
+                console.print(
+                    Panel.fit(
+                        common_hint.strip(),
+                        title="Evidence",
+                        border_style="blue",
+                    )
+                )
+
+            if vendor:
+
+                vendor_hint = field.hints.get(vendor)
+
+                if vendor_hint:
+                    console.print()
+
+                    console.print(
+                        Panel.fit(
+                            vendor_hint.strip(),
+                            title="Location",
+                            border_style="yellow",
+                        )
+                    )
+
+                    console.print()
 
         if field.type == "choice" and field.options:
-            console.print(f"\n[bold]{field.label}[/bold]")
+
+            console.print()
 
             for index, option in enumerate(field.options, start=1):
                 console.print(f"[cyan]{index}.[/cyan] {option}")
@@ -143,44 +139,22 @@ def collect_context(
                 try:
                     value = field.options[int(choice) - 1]
                     break
+
                 except (ValueError, IndexError):
                     console.print("[red]Invalid selection.[/red]")
 
         else:
-            console.print(f"[bold]{field.label}[/bold]")
 
-            vendor = responses.get("mdm_vendor")
-                            
-            if field.hints:
-                console.print()
-                common_hint = field.hints.get("common")
-
-                if common_hint:
-                    console.print(
-                        f"[bold blue]Evidence[/bold blue]\n"
-                        f"[italic]{common_hint}[/italic]"
-                    )
-
-                if vendor:
-
-                    vendor_hint = field.hints.get(vendor)
-
-                    if vendor_hint:
-                        console.print(
-                            f"[bold yellow]Location[/bold yellow]\n"
-                            f"[italic]{vendor_hint}[/italic]"
-                        )
-
-            value = input("> ")
+            value = input("> ").strip()
 
             if field.required:
 
                 while not value:
-
                     console.print("[red]This field is required.[/red]")
                     value = input("> ").strip()
 
         if field.type == "integer":
+
             while True:
                 try:
                     value = int(value)
@@ -189,9 +163,12 @@ def collect_context(
                         raise ValueError
 
                     break
-                
+
                 except ValueError:
-                    value = input(f"{field.label} (enter a number): ")
+                    console.print(
+                        "[red]Please enter a valid number.[/red]"
+                    )
+                    value = input("> ").strip()
 
         responses[field.id] = value
 
@@ -215,30 +192,37 @@ def ask_question(
     recorded for the selected platform.
     """
 
-    common_hint = None
+    common_hint = (
+        question.hints.common.strip()
+        if question.hints.common
+        else None
+    )
+
     vendor_hint = None
 
     if vendor == Vendor.INTUNE and question.hints.intune:
         vendor_hint = question.hints.intune.strip()
 
     console.print()
+
+    progress = int((current / total) * 20)
+
+    bar = (
+        f"[green]{'█' * progress}[/green]"
+        f"[dim]{'░' * (20 - progress)}[/dim]"
+    )
+
     console.print(
-        f"[bold cyan][{platform.value.upper()}] "
-        f"Question {current}/{total}:[/bold cyan] "
+        f"[bold cyan][{platform.value.upper()} {current}/{total}][/bold cyan] "
+        f"{bar} "
         f"[bold]{question.question}[/bold]"
     )
+
     console.print()
 
     if common_hint:
         console.print(
-            f"[bold blue]Evidence[/bold blue]\n"
-            f"[italic]{common_hint.strip()}[/italic]"
-        )
-
-    if vendor_hint:
-        console.print(
-            f"[bold yellow]Location[/bold yellow]\n"
-            f"[italic]{vendor_hint.strip()}[/italic]"
+            Panel.fit(common_hint, title="Evidence", border_style="blue")
         )
 
     platform_hint = None
@@ -249,11 +233,21 @@ def ask_question(
     elif platform == Platform.ANDROID:
         platform_hint = question.hints.android
 
+    check_hints = []
+
+    if vendor_hint:
+        check_hints.append(vendor_hint)
+
     if platform_hint:
-        console.print()
+        check_hints.append(platform_hint.strip())
+
+    if check_hints:
         console.print(
-            f"[bold cyan]Setting[/bold cyan]\n"
-            f"[italic]{platform_hint.strip()}[/italic]"
+            Panel.fit(
+                "\n\n".join(check_hints),
+                title="Check",
+                border_style="cyan",
+            )
         )
 
     console.print()
@@ -286,10 +280,16 @@ def ask_question(
             case _:
                 console.print("[red]Invalid selection.[/red]")
 
+    console.print()
+    console.print("[dim]Notes (optional)[/dim]")
+
+    notes = input("> ").strip() or None
+
     return QuestionResponse(
         finding_id=question.finding_id,
         platform=platform,
         answer=answer,
+        notes=notes,
     )
 
 
@@ -301,23 +301,17 @@ def conduct_review(
     """
     Execute the assessment questionnaire.
 
-    Questions are presented separately for each platform within
-    the review scope, allowing Android and iOS controls to be
-    assessed in dedicated sections. Shared controls are included
-    within each platform review where applicable.
+    Questions are presented separately for each platform within the review 
+    scope. Shared controls are included within each platform review where 
+    applicable.
 
-    Responses collected during the assessment are returned for
-    subsequent finding generation and reporting.
+    Responses collected during the assessment are returned for subsequent 
+    finding generation and reporting.
     """
 
     responses = []
 
     for platform in platforms:
-
-        console.print()
-        console.print(
-            f"[bold green]{platform.value.upper()} REVIEW[/bold green]"
-        )
 
         platform_questions = [
             question
@@ -330,18 +324,7 @@ def conduct_review(
 
         total = len(platform_questions)
 
-        current_section = None
-
         for current, question in enumerate(platform_questions, start=1):
-
-            if question.section != current_section:
-
-                console.print()
-
-                section_name = (question.section.replace("_", " ").title())
-                console.print(f"[bold magenta]{section_name}[/bold magenta]")
-
-                current_section = question.section
 
             response = ask_question(
                 question,
@@ -479,22 +462,24 @@ def run_assessment() -> AssessmentResults:
     and export.
     """
 
-    platforms = select_platforms()
+    context = collect_context(load_context_fields())
 
-    context_fields = get_applicable_context_fields(
-        load_context_fields(),
-        platforms,
-    )
+    match context.platforms:
+        case "iOS and Android":
+            platforms = [Platform.IOS, Platform.ANDROID]
 
-    context = collect_context(context_fields)
+        case "iOS only":
+            platforms = [Platform.IOS]
+
+        case "Android only":
+            platforms = [Platform.ANDROID]
+
+        case _:
+            raise ValueError("Invalid platform selection")
 
     questions = get_applicable_questions(load_questions(), platforms)
 
-    responses = conduct_review(
-        questions,
-        context.mdm_vendor,
-        platforms,
-    )
+    responses = conduct_review(questions, context.mdm_vendor, platforms)
 
     return build_assessment_results(
         context=context,

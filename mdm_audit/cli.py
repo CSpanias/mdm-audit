@@ -13,7 +13,9 @@ import argparse
 from rich.panel import Panel
 from textwrap import dedent
 
-from mdm_audit.exporters.json import export_findings_json
+from mdm_audit.exporters.json import (
+    export_findings_json, export_assessment_responses_json
+)
 from mdm_audit.exporters.markdown import export_markdown
 from mdm_audit.review import run_assessment
 from mdm_audit.ui import console
@@ -39,8 +41,9 @@ def main() -> None:
     console.print(f"[red]Findings:[/red] {len(results.findings)}")
     console.print(f"[green]Positive Observations:[/green] {len(results.positives)}")
 
-    export_findings_json(results, "assessment.json")
-    export_markdown(results, "assessment.md")
+    export_findings_json(results, "findings.json")
+    export_markdown(results, "report.md")
+    export_assessment_responses_json(results, "responses.json")
 
 
 if __name__ == "__main__":

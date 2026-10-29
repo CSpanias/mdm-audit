@@ -74,3 +74,38 @@ def export_findings_json(
             file,
             indent=4,
         )
+
+
+def export_assessment_responses_json(
+    results: AssessmentResults,
+    output_file: str,
+) -> None:
+    """
+    Export the complete assessment response history.
+
+    This export provides a full audit trail of the assessment,
+    including the response recorded for each question together
+    with any assessor notes. The data can be used to support
+    report writing, quality assurance activities, and future
+    reassessments.
+
+    All responses are included regardless of whether notes were
+    recorded.
+    """
+
+    responses = [
+        {
+            "finding_id": response.finding_id,
+            "platform": response.platform.value,
+            "answer": response.answer.value,
+            "notes": response.notes,
+        }
+        for response in results.responses
+    ]
+
+    with open(output_file, "w", encoding="utf-8") as file:
+        json.dump(
+            {"responses": responses},
+            file,
+            indent=4,
+        )

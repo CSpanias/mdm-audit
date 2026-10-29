@@ -100,7 +100,6 @@ class ContextField(BaseModel):
     Fields are loaded dynamically from context_fields.yaml.
     """
     id: str
-    order: int
 
     label: str
     type: str
@@ -126,6 +125,7 @@ class ReviewContext(BaseModel):
     A single ReviewContext exists for each assessment.
     """
 
+    platforms: str
     client_name: str
 
     mdm_vendor: Vendor

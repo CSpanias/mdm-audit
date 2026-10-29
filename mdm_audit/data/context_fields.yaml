@@ -9,16 +9,29 @@
 
 
 - id: client_name
-  order: 1
   label: What is the client or tenant name?
   type: string
   required: true
+  
+  platforms:
+    - ios
+    - android
+
+- id: platforms
+  label: Which mobile platforms are being reviewed?
+  type: choice
+  required: true
+
+  options:
+    - iOS and Android
+    - iOS only
+    - Android only
+
   platforms:
     - ios
     - android
 
 - id: mdm_vendor
-  order: 2
   label: Which MDM solution is being reviewed?
   type: choice
   required: true
@@ -32,57 +45,62 @@
     - android
 
 - id: mdm_version
-  order: 3
   label: Which MDM platform version or service release is in use?
   type: string
   required: true
+
   hints:
     Microsoft Intune: >
       Tenant administration > Tenant status > Tenant details
+  
   platforms:
     - ios
     - android
 
 - id: ios_policy_count
-  order: 4
   label: How many iOS compliance policies are configured?
   type: integer
   required: true
+
   hints:
     Microsoft Intune: >
       Devices > Manage Devices > Compliance
+
   platforms:
     - ios
 
 - id: android_policy_count
-  order: 5
   label: How many Android compliance policies are configured?
   type: integer
   required: true
+
   hints:
     Microsoft Intune: >
       Devices > Manage Devices > Compliance
+  
   platforms:
     - android
 
 - id: ios_device_count
-  order: 6
   label: How many iOS devices are currently enrolled?
   type: integer
   required: true
+
   hints:
     Microsoft Intune: >
       Devices > Overview > Apple mobile
+
   platforms:
     - ios
 
 - id: android_device_count
-  order: 7
   label: How many Android devices are currently enrolled?
   type: integer
   required: true
+
   hints:
     Microsoft Intune: >
       Devices > Overview > Android
+
   platforms:
     - android
