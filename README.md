@@ -1,10 +1,10 @@
 # MDM-Audit
 
-A Python-based tool designed to make Mobile Device Management security reviews more efficient.
+A Python-based tool designed to streamline Mobile Device Management (MDM) security reviews.
 
 Developed as an educational tool to accompany [Mobile Device Management Security Explained: Microsoft Intune](https://mollysec.com/posts/mdm-security-explained/). 
 
-The generated outputs are intended to support formal security reviews and can be used as inputs into downstream reporting and governance platforms.
+The generated outputs are intended to support formal security reviews and can be used as inputs into downstream reporting and governance tools.
 
 ```text
 Configuration Review
@@ -52,26 +52,27 @@ uv venv
 uv pip install -e .
 
 # Verify installation
-python -m mdm_audit.review
+python -m mdm_audit.cli
 ```
 
 ## Features
 
-WIP
+- Guided MDM assessment workflow
+- Support for Intune-based iOS / iPadOS and Android reviews
+- Markdown-formatted report generation
+- JSON findings export
+- JSON assessment response export
+- YAML-driven assessment content
 
 ## Usage
 
-WIP
+Just launch the tool!
 
-## Example Output
-
-WIP
+```bash
+mdm-audit
+```
 
 ## Requirements
 
 - Python 3.11+
 - UV (recommended)
-
-## Roadmap
-
-WIP
