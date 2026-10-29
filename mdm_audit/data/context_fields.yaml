@@ -9,17 +9,26 @@
 
 
 - id: client_name
+  phase: setup
+
   label: What is the client or tenant name?
+
   type: string
+
   required: true
-  
+
   platforms:
     - ios
     - android
 
 - id: platforms
+
+  phase: setup
+
   label: Which mobile platforms are being reviewed?
+
   type: choice
+
   required: true
 
   options:
@@ -32,8 +41,13 @@
     - android
 
 - id: mdm_vendor
+
+  phase: setup
+
   label: Which MDM solution is being reviewed?
+
   type: choice
+
   required: true
 
   options:
@@ -45,8 +59,13 @@
     - android
 
 - id: mdm_version
+
+  phase: setup
+
   label: Which MDM platform version or service release is in use?
+  
   type: string
+  
   required: true
 
   hints:
@@ -58,8 +77,13 @@
     - android
 
 - id: ios_policy_count
+
+  phase: context
+  
   label: How many iOS compliance policies are configured?
+  
   type: integer
+  
   required: true
 
   hints:
@@ -70,8 +94,13 @@
     - ios
 
 - id: android_policy_count
+
+  phase: context
+
   label: How many Android compliance policies are configured?
+  
   type: integer
+  
   required: true
 
   hints:
@@ -82,8 +111,13 @@
     - android
 
 - id: ios_device_count
+
+  phase: context
+
   label: How many iOS devices are currently enrolled?
+  
   type: integer
+  
   required: true
 
   hints:
@@ -94,8 +128,13 @@
     - ios
 
 - id: android_device_count
+
+  phase: context
+
   label: How many Android devices are currently enrolled?
+  
   type: integer
+  
   required: true
 
   hints:

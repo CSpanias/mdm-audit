@@ -62,25 +62,42 @@ def get_applicable_questions(
     return applicable_questions
 
 
+def get_fields_by_phase(
+    fields: list[ContextField],
+    phase: str,
+) -> list[ContextField]:
+    """
+    Return context fields belonging to the specified phase.
+    """
+
+    return [
+        field
+        for field in fields
+        if field.phase == phase
+    ]
+
+
 def collect_context(
     fields: list[ContextField],
-) -> ReviewContext:
+    responses: dict | None = None,
+    start: int = 1,
+    overall_total: int | None = None,
+) -> dict:
     """
     Collect contextual information about the reviewed MDM
     environment.
 
-    The collected information describes the environment under
-    review and is used within generated reports, exports, and
-    assessment summaries.
+    Collected values are merged into the supplied response
+    dictionary and returned to the caller.
     """
 
-    responses = {}
+    responses = responses or {}
 
-    total = len(fields)
+    overall_total = overall_total or len(fields)
 
-    for current, field in enumerate(fields, start=1):
+    for current, field in enumerate(fields, start=start):
 
-        progress = max(1, int((current / total) * 20))
+        progress = max(1, int((current / overall_total) * 20))
 
         bar = (
             f"[green]{'█' * progress}[/green]"
@@ -89,7 +106,7 @@ def collect_context(
 
         console.print()
         console.print(
-            f"[bold cyan][CONTEXT {current}/{total}][/bold cyan] "
+            f"[bold cyan][CONTEXT {current}/{overall_total}][/bold cyan] "
             f"{bar} "
             f"[bold]{field.label}[/bold]"
         )
@@ -172,7 +189,7 @@ def collect_context(
 
         responses[field.id] = value
 
-    return ReviewContext(**responses)
+    return responses
 
 
 def ask_question(
@@ -456,15 +473,19 @@ def run_assessment() -> AssessmentResults:
     """
     Execute a complete MDM assessment.
 
-    The assessment workflow consists of scope selection, context
-    collection, questionnaire execution, and results generation.
-    The completed assessment results are returned for reporting
+    The assessment workflow consists of context collection,
+    questionnaire execution, and results generation. The
+    completed assessment results are returned for reporting
     and export.
     """
 
-    context = collect_context(load_context_fields())
+    all_fields = load_context_fields()
 
-    match context.platforms:
+    setup_fields = get_fields_by_phase(all_fields, "setup")
+
+    context_data = collect_context(setup_fields)
+
+    match context_data["platforms"]:
         case "iOS and Android":
             platforms = [Platform.IOS, Platform.ANDROID]
 
@@ -477,12 +498,39 @@ def run_assessment() -> AssessmentResults:
         case _:
             raise ValueError("Invalid platform selection")
 
+    platform_fields = [
+        field
+        for field in get_fields_by_phase(
+            all_fields,
+            "context",
+        )
+        if any(
+            platform in field.platforms
+            for platform in platforms
+        )
+    ]
+
+    total_context_fields = (len(setup_fields) + len(platform_fields))
+
+    context_data = collect_context(
+        platform_fields,
+        context_data,
+        start=len(setup_fields) + 1,
+        overall_total=total_context_fields,
+    )
+
+    context = ReviewContext(**context_data)
+
     questions = get_applicable_questions(load_questions(), platforms)
 
-    responses = conduct_review(questions, context.mdm_vendor, platforms)
+    question_responses = conduct_review(
+        questions,
+        context.mdm_vendor,
+        platforms,
+    )
 
     return build_assessment_results(
         context=context,
         questions=questions,
-        responses=responses,
+        responses=question_responses,
     )

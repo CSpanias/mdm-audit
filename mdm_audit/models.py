@@ -101,6 +101,8 @@ class ContextField(BaseModel):
     """
     id: str
 
+    phase: str = "context"
+
     label: str
     type: str
 
