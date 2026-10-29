@@ -388,12 +388,16 @@ def generate_findings(
             findings.append(
                 Finding(
                     finding_id=question.finding_id,
+                    theme=question.theme,
+                    commentary_group=question.commentary_group,
+                    section=question.section,
                     platform=response.platform,
                     title=question.finding_title,
-                    description=question.description.strip(),
-                    commentary=question.commentary.strip(),
-                    solution=question.solution.strip(),
+                    description=question.description,
+                    commentary=question.commentary,
+                    solution=question.solution,
                 )
+
             )
 
     return findings

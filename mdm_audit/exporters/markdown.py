@@ -8,9 +8,7 @@ and remediation guidance.
 
 from pathlib import Path
 
-from mdm_audit.constants import (
-    FINDING_THEMES, COMMENTARY_GROUPS, REFERENCES
-)
+from mdm_audit.constants import REFERENCES, COMMENTARY_ORDER
 from mdm_audit.models import AssessmentResults, Platform
 
 
@@ -37,25 +35,21 @@ def _get_review_scope(
 #-------------------------------------------------------------------------------
 # Executive Summary
 #-------------------------------------------------------------------------------
+
 def _get_identified_themes(
     results: AssessmentResults,
 ) -> list[str]:
     """
-    Return the security themes affected by identified findings.
+    Return the themes affected by identified findings.
     """
 
-    identified_themes = []
-
-    finding_ids = {
-        finding.finding_id
+    themes = {
+        finding.theme
         for finding in results.findings
+        if getattr(finding, "theme", None)
     }
 
-    for theme, theme_findings in FINDING_THEMES.items():
-        if finding_ids.intersection(theme_findings):
-            identified_themes.append(theme)
-
-    return identified_themes
+    return sorted(themes)
 
 
 def _get_security_posture(
@@ -163,12 +157,20 @@ def _generate_executive_summary(
         )
 
     else:
-        lines.append(
-            "The review identified several weaknesses "
-            "affecting the implementation and enforcement of "
-            "mobile device security controls. Opportunities for "
-            f"improvement were identified relating to {theme_text}."
-        )
+        if theme_text:
+            lines.append(
+                "The review identified several weaknesses "
+                "affecting the implementation and enforcement of "
+                "mobile device security controls. Opportunities for "
+                f"improvement were identified relating to {theme_text}."
+            )
+
+        else:
+            lines.append(
+                "The review identified several weaknesses "
+                "affecting the implementation and enforcement of "
+                "mobile device security controls."
+            )
 
     lines.append("")
 
@@ -266,6 +268,7 @@ def _generate_executive_summary(
 #-------------------------------------------------------------------------------
 # Technical Commentary
 #-------------------------------------------------------------------------------
+
 def _get_group_intro(
     group_name: str,
 ) -> str:
@@ -318,21 +321,35 @@ def _get_group_intro(
 def _group_findings(
     findings,
 ) -> dict[str, list]:
+    """
+    Group findings by commentary group.
+    """
 
     grouped = {}
 
-    for group_name, group_ids in COMMENTARY_GROUPS.items():
+    for finding in findings:
 
-        matches = [
-            finding
-            for finding in findings
-            if finding.finding_id in group_ids
-        ]
+        group = getattr(
+            finding,
+            "commentary_group",
+            None,
+        )
 
-        if matches:
-            grouped[group_name] = matches
+        if not group:
+            continue
 
-    return grouped
+        grouped.setdefault(
+            group,
+            []
+        ).append(finding)
+
+    ordered = {}
+
+    for group in COMMENTARY_ORDER:
+        if group in grouped:
+            ordered[group] = grouped[group]
+
+    return ordered
 
 
 def _generate_commentary(
@@ -436,6 +453,17 @@ def _generate_commentary(
         )
 
     lines.append("")
+
+    print("\n=== COMMENTARY DEBUG ===")
+    print("iOS findings:", len(ios_findings))
+    print("Android findings:", len(android_findings))
+
+    if ios_findings:
+        print("First iOS finding:")
+        print(ios_findings[0])
+
+    print("iOS groups:", ios_groups.keys())
+    print("Android groups:", android_groups.keys())
 
     return lines
 

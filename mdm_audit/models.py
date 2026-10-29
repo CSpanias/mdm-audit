@@ -198,6 +198,9 @@ class Question(BaseModel):
 
     finding_id: str
     finding_title: str
+    theme: str
+    commentary_group: str
+
     section: str
 
     expected_answer: AuditAnswer
@@ -209,8 +212,7 @@ class Question(BaseModel):
     solution: str
     positive: str
 
-    good_value: str
-    bad_value: str
+    expected_value: str
 
     hints: VendorHints
 
@@ -232,7 +234,13 @@ class Finding(BaseModel):
     """
     
     finding_id: str
+
+    theme: str
+    commentary_group: str
+    section: str
+
     platform: Platform
+
     title: str
     description: str
     commentary: str
