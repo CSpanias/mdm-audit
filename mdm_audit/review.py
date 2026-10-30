@@ -267,6 +267,14 @@ def ask_question(
             )
         )
 
+    console.print(
+        Panel.fit(
+            question.expected_value.strip(),
+            title="Expected Value",
+            border_style="green",
+        )
+    )
+
     console.print()
 
     console.print("1. Compliant")

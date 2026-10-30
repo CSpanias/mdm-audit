@@ -494,13 +494,13 @@ def _generate_remediation(
     lines.append("")
 
     for title, url in REFERENCES["Generic"].items():
-        lines.append(f"- [{title}]({url})")
+        lines.append(f"- [{url}]({url})")
 
     vendor = results.context.mdm_vendor
 
     if vendor in REFERENCES:
         for title, url in REFERENCES[vendor].items():
-            lines.append(f"- [{title}]({url})")
+            lines.append(f"- [{url}]({url})")
 
 
 
@@ -517,24 +517,12 @@ def export_markdown(
 
     path = Path(output_file)
 
-    lines = [
-        f"# {results.context.client_name} - MDM Assessment",
-        "",
-    ]
+    lines = [f"# {results.context.client_name} - MDM Assessment", ""]
 
-    lines.extend(
-        _generate_executive_summary(results)
-    )
+    lines.extend(_generate_executive_summary(results))
 
-    lines.extend(
-        _generate_commentary(results)
-    )
+    lines.extend(_generate_commentary(results))
 
-    lines.extend(
-        _generate_remediation(results)
-    )
+    lines.extend(_generate_remediation(results))
 
-    path.write_text(
-        "\n".join(lines),
-        encoding="utf-8",
-    )
+    path.write_text("\n".join(lines), encoding="utf-8")
