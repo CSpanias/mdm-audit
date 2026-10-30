@@ -8,7 +8,9 @@ and remediation guidance.
 
 from pathlib import Path
 
-from mdm_audit.constants import REFERENCES, COMMENTARY_ORDER
+from mdm_audit.constants import (
+    REFERENCES, COMMENTARY_ORDER, THEME_DISPLAY, NUMBER_WORDS
+)
 from mdm_audit.models import AssessmentResults, Platform
 
 
@@ -31,6 +33,29 @@ def _get_review_scope(
         return "iOS devices"
 
     return "Android devices"
+
+
+def _format_count(
+    count: int,
+    singular: str,
+    plural: str,
+) -> str:
+    """
+    Convert counts into report-friendly text.
+
+    Examples:
+        0 -> "no findings"
+        1 -> "one finding"
+        2 -> "two findings"
+        10 -> "10 findings"
+    """
+
+    value = NUMBER_WORDS.get(count, str(count))
+
+    if count == 1:
+        return f"{value} {singular}"
+
+    return f"{value} {plural}"
 
 #-------------------------------------------------------------------------------
 # Executive Summary
@@ -111,13 +136,6 @@ def _generate_executive_summary(
 
     themes = _get_identified_themes(results)
 
-    theme_names = [
-        theme.lower()
-        for theme in themes
-    ]
-
-    theme_text = _format_list(theme_names)
-
     lines.append("## Executive Summary")
     lines.append("")
 
@@ -138,85 +156,67 @@ def _generate_executive_summary(
     #---------------------------------------------------------------------------
     # Second Paragraph
     #---------------------------------------------------------------------------
+    finding_count = len(results.findings)
+    positive_count = len(results.positives)
+
+    finding_text = _format_count(finding_count, "finding", "findings")
+
+    positive_text = _format_count(
+        positive_count, "positive observation", "positive observations"
+    )
+
     if posture == "strong":
         lines.append(
-            "The review identified that security "
-            "controls were generally well implemented across "
-            "the assessed mobile device estate. While several "
-            f"opportunities for improvement relating to {theme_text} "
-            "were identified, the majority of assessed controls "
-            "were operating as intended."
+            f"The assessment identified {finding_text} "
+            f"and {positive_text}. Security "
+            "controls were generally well implemented across the "
+            "assessed mobile device estate and the majority of "
+            "controls were operating as intended."
         )
 
     elif posture == "moderate":
         lines.append(
-            "The review identified a mixture of effective "
-            "controls and opportunities for improvement across the "
-            "mobile device estate. Areas requiring attention related "
-            f"to {theme_text}."
+            f"The assessment identified {finding_text} "
+            f"and {positive_text}. A mixture "
+            "of effective controls and opportunities for improvement "
+            "was observed across the mobile device estate."
         )
 
     else:
-        if theme_text:
-            lines.append(
-                "The review identified several weaknesses "
-                "affecting the implementation and enforcement of "
-                "mobile device security controls. Opportunities for "
-                f"improvement were identified relating to {theme_text}."
-            )
-
-        else:
-            lines.append(
-                "The review identified several weaknesses "
-                "affecting the implementation and enforcement of "
-                "mobile device security controls."
-            )
+        lines.append(
+            f"The assessment identified {finding_text} "
+            f"and {positive_text}. "
+            "Weaknesses were observed across multiple areas of the "
+            "mobile device management implementation, indicating "
+            "that expected security controls were not consistently "
+            "implemented or enforced across the assessed device estate."
+        )
 
     lines.append("")
 
     #---------------------------------------------------------------------------
     # Third Paragraph
     #---------------------------------------------------------------------------
-    impact_areas = []
-
-    if (
-        "Patch and Lifecycle Management" in themes
-        or "Device Hardening" in themes
-    ):
-        impact_areas.append(
-            "maintaining secure and compliant device configurations"
-        )
-
-    if "Access Control" in themes:
-        impact_areas.append(
-            "enforcing appropriate authentication and access controls"
-        )
-
-    if "Data Protection" in themes:
-        impact_areas.append(
-            "protecting corporate information stored on managed devices"
-        )
-
-    if "Application Control" in themes:
-        impact_areas.append(
-            "governing the use of applications and device functionality"
-        )
-
-    if not impact_areas:
-        impact_text = ("maintaining secure and compliant device configurations")
-    else:
-        impact_text = _format_list(impact_areas)
+        
+    theme_text = _format_list(
+        [
+            THEME_DISPLAY.get(theme, theme.lower())
+            for theme in themes
+        ]
+    )
 
     if results.findings:
 
         lines.append(
-            "The issues identified may reduce assurance that security "
-            "requirements are applied consistently across the mobile "
-            "estate. Several observations related to controls "
-            f"responsible for {impact_text}. "
-            "Where such controls are not consistently enforced, the "
-            "likelihood of unauthorised access, information disclosure, "
-            "or device misuse may increase."
+            f"The most significant observations related to {theme_text}. "
+            "The assessment identified weaknesses affecting both "
+            "the enforcement of security controls through device "
+            "configuration policies and the validation of those "
+            "controls through compliance policies. Where such "
+            "controls are not consistently enforced and monitored, "
+            "the likelihood of unauthorised access, information "
+            "disclosure, device compromise, or policy non-compliance "
+            "may increase."
         )
 
     else:
@@ -244,21 +244,21 @@ def _generate_executive_summary(
 
     elif posture == "moderate":
         lines.append(
-            "Overall, the MDM platform provides a foundation for "
-            "the management of corporate mobile devices; however, "
-            "further work is required to ensure that security "
-            "controls are applied consistently across the mobile "
-            "estate."
+            "Overall, the assessed configuration provides a reasonable "
+            "foundation for the secure management of mobile devices; "
+            "however, several control weaknesses should be addressed to "
+            "improve the consistency and effectiveness of security "
+            "enforcement across the estate."
         )
 
     else:
         lines.append(
             "Overall, significant opportunities exist to strengthen "
             "the security posture of the mobile device estate. "
-            "Priority should be given to improving security control "
-            "coverage, strengthening device protections, and "
-            "ensuring that security requirements are enforced "
-            "consistently across managed devices."
+            "Priority should be given to improving both the "
+            "enforcement of security requirements through device "
+            "configuration policies and the validation of those "
+            "requirements through compliance monitoring controls."
         )
 
     lines.append("")
@@ -453,17 +453,6 @@ def _generate_commentary(
         )
 
     lines.append("")
-
-    print("\n=== COMMENTARY DEBUG ===")
-    print("iOS findings:", len(ios_findings))
-    print("Android findings:", len(android_findings))
-
-    if ios_findings:
-        print("First iOS finding:")
-        print(ios_findings[0])
-
-    print("iOS groups:", ios_groups.keys())
-    print("Android groups:", android_groups.keys())
 
     return lines
 

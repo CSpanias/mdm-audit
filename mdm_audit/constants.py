@@ -2,6 +2,20 @@
 Reporting and categorisation constants.
 """
 
+NUMBER_WORDS = {
+    0: "no",
+    1: "one",
+    2: "two",
+    3: "three",
+    4: "four",
+    5: "five",
+    6: "six",
+    7: "seven",
+    8: "eight",
+    9: "nine",
+}
+
+
 COMMENTARY_ORDER = [
     "Device Lifecycle and Compliance",
     "Authentication and Access Control",
@@ -10,6 +24,23 @@ COMMENTARY_ORDER = [
     "Application Governance",
 ]
 
+
+THEME_DISPLAY = {
+    "Access Control":
+        "authentication and access control",
+
+    "Application Control":
+        "application governance",
+
+    "Data Protection":
+        "data protection",
+
+    "Device Hardening":
+        "device hardening",
+
+    "Patch and Lifecycle Management":
+        "device lifecycle management",
+}
 
 REFERENCES = {
     "Generic": {
