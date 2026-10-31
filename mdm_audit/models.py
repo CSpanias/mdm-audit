@@ -202,6 +202,7 @@ class Question(BaseModel):
     commentary_group: str
 
     section: str
+    remediation_id: str | None = None
 
     expected_answer: AuditAnswer
 
@@ -238,6 +239,7 @@ class Finding(BaseModel):
     theme: str
     commentary_group: str
     section: str
+    remediation_id: str | None = None
 
     platform: Platform
 

@@ -24,6 +24,7 @@
   commentary_group: Data Protection
   finding_title: Unrestricted External Storage Usage
   section: configuration
+  remediation_id: external_storage
 
   expected_answer: compliant
 
@@ -51,11 +52,11 @@
     accordance with organisational security requirements.
 
   positive: >
-    Appropriate controls are in place to restrict or secure the use of
+    Appropriate controls were in place to restrict or secure the use of
     removable and external storage on managed Android devices.
 
   expected_value: >
-    Set to Block.
+    Block
 
   hints:
     intune: Devices > Manage Devices > Configuration > Click target policy > 
@@ -67,6 +68,7 @@
   commentary_group: Device Security and Hardening
   finding_title: Developer Mode Enabled
   section: configuration
+  remediation_id: developer_mode
 
   expected_answer: compliant
 
@@ -92,10 +94,10 @@
     devices.
 
   positive: >
-    Developer Mode is disabled on managed Android devices.
+    Developer Mode was disabled on managed Android devices.
 
   expected_value: >
-    Set to Not configured.
+    Not configured
 
   hints:
     intune: Devices > Manage Devices > Configuration > Click target policy > 
@@ -107,6 +109,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Device Password Not Required
   section: configuration
+  remediation_id: password_required
 
   expected_answer: compliant
 
@@ -127,15 +130,15 @@
     information stored on managed devices.
 
   solution: >
-    Configure compliance policies to require a passcode, PIN, or
-    password before managed devices can access corporate resources.
+    Enforce a passcode, PIN, or password requirement through device 
+    configuration policies.
 
   positive: >
-    Device authentication is enforced through mandatory passcode
+    Device authentication was enforced through mandatory passcode
     requirements.
 
   expected_value: >
-    Set to Require.
+    Require
 
   hints:
     intune: Devices > Manage Devices > Configuration > Click target policy > 
@@ -147,6 +150,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Simple Passwords Allowed
   section: configuration
+  remediation_id: simple_passwords
 
   expected_answer: compliant
 
@@ -165,15 +169,14 @@
     unauthorised access.
 
   solution: >
-    Configure device restrictions to block simple passwords and require
-    users to select stronger authentication credentials.
+    Prevent the use of simple passwords through device configuration policies 
+    and require users to select stronger authentication credentials.
 
   positive: >
-    Simple passwords are prohibited through device configuration
-    policies.
+    Simple passwords were prohibited through device configuration policies.
 
   expected_value: >
-    Set to Yes.
+    Yes
 
   hints:
     intune: Devices > Manage Devices > Configuration > Click target policy > 
@@ -185,6 +188,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Weak Numeric-Only Passwords Allowed
   section: configuration
+  remediation_id: alphanumeric_passwords
 
   expected_answer: compliant
 
@@ -207,11 +211,11 @@
     brute-force and guessing attacks.
 
   positive: >
-    Numeric-only passwords are prohibited and alphanumeric passwords
+    Numeric-only passwords were prohibited and alphanumeric passwords
     are required.
 
   expected_value: >
-    Set to at least Alphanumeric.
+    At least Alphanumeric
 
   hints:
     intune: Devices > Manage Devices > Configuration > Click target policy > 
@@ -224,6 +228,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Weak Minimum Password Length
   section: configuration
+  remediation_id: minimum_password_length
 
   expected_answer: compliant
 
@@ -244,14 +249,14 @@
     reduced.
 
   solution: >
-    Configure a minimum password length of four or more characters in
+    Enforce a minimum password length of four or more characters in
     accordance with organisational security requirements.
 
   positive: >
-    The configured password length meets recommended security standards.
+    The configured password length met recommended security standards.
 
   expected_value: >
-    Set to at least 4 characters.
+    At least 4 characters
 
   hints:
     intune: Devices > Manage Devices > Configuration > Click target policy > 
@@ -264,6 +269,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Password Reuse Not Restricted
   section: configuration
+  remediation_id: password_history
 
   expected_answer: compliant
 
@@ -286,11 +292,11 @@
     defined number of previously used passwords.
 
   positive: >
-    Password history controls prevent the reuse of previously used
+    Password history controls prevented the reuse of previously used
     authentication credentials.
 
   expected_value: >
-    Set to 5 or more.
+    5 or more
 
   hints:
     intune: Devices > Manage Devices > Configuration > Click target policy > 
@@ -322,16 +328,15 @@
     protect sensitive information from unauthorised access.
 
   solution: >
-    Configure devices to automatically wipe after a defined number of
-    failed authentication attempts in accordance with organisational
-    security requirements.
+    Enable automatic device wipe after a defined number of failed 
+    authentication attempts.
 
   positive: >
-    Devices are configured to automatically wipe after repeated failed
+    Devices were configured to automatically wipe after repeated failed
     authentication attempts.
 
   expected_value: >
-    Set to 5 or less.
+    5 or less
 
   hints:
     intune: Devices > Manage Devices > Configuration > Click target policy > 
@@ -344,6 +349,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Excessive Screen Lock Password
   section: configuration
+  remediation_id: screen_lock_reauthentication
 
   expected_answer: compliant
 
@@ -363,15 +369,14 @@
     individual.
 
   solution: >
-    Configure devices to require re-authentication within a short period
-    following screen lock events in accordance with organisational
-    security requirements.
+    Require re-authentication within a short period following screen lock 
+    events in accordance with organisational security requirements.
 
   positive: >
-    Devices require re-authentication shortly after the screen is locked.
+    Devices required re-authentication shortly after the screen is locked.
 
   expected_value: >
-    Set to 5 minutes or less.
+    5 minutes or less
 
   hints:
     intune: Devices > Manage Devices > Configuration > Click target policy > 
@@ -384,6 +389,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Excessive Screen Lock Timeout
   section: configuration
+  remediation_id: screen_lock_timeout
 
   expected_answer: compliant
 
@@ -403,15 +409,14 @@
     authentication controls.
 
   solution: >
-    Configure devices to automatically lock and require
-    re-authentication after an appropriate period of inactivity in
-    accordance with organisational security requirements.
+    Configure devices to automatically lock after an appropriate period of 
+    inactivity in accordance with organisational security requirements.
 
   positive: >
-    Devices automatically lock after a suitable period of inactivity.
+    Devices automatically locked after a suitable period of inactivity.
 
   expected_value: >
-    Set to 3 minutes or less.
+    3 minutes or less
 
   hints:
     intune: Devices > Manage Devices > Configuration > Click target policy > 
@@ -424,6 +429,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Biometric Authentication Disabled
   section: configuration
+  remediation_id: biometrics
 
   expected_answer: compliant
 
@@ -447,10 +453,10 @@
     usability and encourage strong device authentication practices.
 
   positive: >
-    Biometric authentication is permitted on managed devices.
+    Biometric authentication was permitted on managed devices.
 
   expected_value: >
-    Set to Not configured.
+    Not configured
 
   hints:
     ios: Devices > Manage Devices > Configuration > Click target policy > Click 
@@ -463,6 +469,7 @@
   commentary_group: Application Governance
   finding_title: Unrestricted App Store / Play Store Access
   section: configuration
+  remediation_id: app_store_access
 
   expected_answer: compliant
 
@@ -486,11 +493,11 @@
     managed application stores where possible.
 
   positive: >
-    Application marketplace access is controlled through approved
+    Application marketplace access was controlled through approved
     software catalogues and policies.
 
   expected_value: >
-    Set to Block / Not configured (Android) and Yes (iOS).
+    Block / Not configured (Android) or Yes (iOS)
 
   hints:
     ios: Devices > Manage Devices > Configuration > Click target policy > Click 
@@ -507,6 +514,7 @@
   commentary_group: Device Security and Hardening
   finding_title: Unrestricted iOS Host Pairing
   section: configuration
+  remediation_id: host_pairing
 
   expected_answer: compliant
 
@@ -531,11 +539,11 @@
     establishing trust relationships with unauthorised computers.
 
   positive: >
-    Host pairing is restricted, preventing managed devices from
+    Host pairing was restricted, preventing managed devices from
     pairing with unauthorised computers.
 
   expected_value: >
-    Set to Yes.
+    Yes
 
   hints:
     intune: Devices > Manage Devices > Configuration > Click target policy > 
@@ -548,6 +556,7 @@
   commentary_group: Data Protection
   finding_title: Screen Capture Permitted on Managed iOS Devices
   section: configuration
+  remediation_id: screen_capture
 
   expected_answer: compliant
 
@@ -572,11 +581,11 @@
     or disclosed outside managed applications.
 
   positive: >
-    Screen capture functionality is appropriately restricted on
+    Screen capture functionality was appropriately restricted on
     managed iOS devices.
 
   expected_value: >
-    Set to Yes (iOS) and Block (Android).
+    Yes (iOS) or Block (Android)
 
   hints:
     ios: Devices > Manage Devices > Configuration > Click target policy > 
@@ -592,6 +601,7 @@
   commentary_group: Device Security and Hardening
   finding_title: USB Accessories Allowed While Locked
   section: configuration
+  remediation_id: usb_restricted_mode
 
   expected_answer: compliant
 
@@ -616,10 +626,10 @@
     USB accessories from communicating with devices while locked.
 
   positive: >
-    USB Restricted Mode is enabled on managed iOS devices.
+    USB Restricted Mode was enabled on managed iOS devices.
 
   expected_value: >
-    Set to Yes.
+    Yes
 
   hints:
     intune: Devices > Manage Devices > Configuration > Click target policy > 
@@ -636,6 +646,7 @@
   commentary_group: Device Security and Hardening
   finding_title: Use of Jailbroken/Rooted Devices
   section: compliance
+  remediation_id: jailbreak_root_detection
 
   expected_answer: compliant
 
@@ -662,11 +673,11 @@
     resources.
 
   positive: >
-    Jailbroken and rooted devices are detected and prevented from
+    Jailbroken and rooted devices were detected and prevented from
     accessing corporate resources.
 
   expected_value: >
-    Set to Block.
+    Block
 
   hints:
     intune: Devices > Manage Devices > Compliance > Click target policy > 
@@ -679,6 +690,7 @@
   commentary_group: Device Lifecycle and Compliance
   finding_title: Unsupported Mobile OS Version
   section: compliance
+  remediation_id: supported_os_version
 
   expected_answer: compliant
 
@@ -704,7 +716,7 @@
     the device vendor.
 
   positive: >
-    The minimum supported operating system version continues to receive
+    The minimum supported operating system version continued to receive
     vendor security updates.
 
   expected_value: >
@@ -727,6 +739,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Device Password Not Required
   section: compliance
+  remediation_id: password_required
 
   expected_answer: compliant
 
@@ -746,15 +759,14 @@
     information stored on managed devices.
 
   solution: >
-    Configure compliance policies to require a passcode, PIN, or
-    password before managed devices can access corporate resources.
+    Require a passcode, PIN, or password through device compliance policies 
+    before managed devices can access corporate resources.
 
   positive: >
-    Device authentication is enforced through mandatory passcode
-    requirements.
+    Device authentication was enforced through mandatory passcode requirements.
 
   expected_value: >
-    Set to Require.
+    Require
 
   hints:
     intune: Devices > Compliance > Click target policy > Properties > Click 
@@ -767,6 +779,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Simple Passwords Allowed
   section: compliance
+  remediation_id: simple_passwords
 
   expected_answer: compliant
 
@@ -785,14 +798,14 @@
     unauthorised access.
 
   solution: >
-    Configure compliance policies to block simple passwords and require
+    Prevent the use of simple passwords through device restrictions and require 
     users to select stronger authentication credentials.
 
   positive: >
-    Simple passwords are prohibited through device compliance policies.
+    Simple passwords were prohibited through device compliance policies.
 
   expected_value: >
-    Set to Block.
+    Block
 
   hints:
     intune: Devices > Compliance > Click target policy > Properties > Click 
@@ -804,6 +817,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Weak Numeric-Only Passwords Allowed
   section: compliance
+  remediation_id: alphanumeric_passwords
 
   expected_answer: compliant
 
@@ -826,11 +840,11 @@
     brute-force and guessing attacks.
 
   positive: >
-    Numeric-only passwords are prohibited and alphanumeric passwords
-    are required.
+    Numeric-only passwords were prohibited and alphanumeric passwords
+    were required.
 
   expected_value: >
-    Set to at least Alphanumeric.
+    At least Alphanumeric
 
   hints:
     intune: Devices > Compliance > Click target policy > Properties > Click 
@@ -843,6 +857,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Weak Minimum Password Length
   section: compliance
+  remediation_id: minimum_password_length
 
   expected_answer: compliant
 
@@ -862,14 +877,14 @@
     reduced.
 
   solution: >
-    Configure a minimum password length of four or more characters in
+    Enforce a minimum password length of four or more characters in
     accordance with organisational security requirements.
 
   positive: >
-    The configured password length meets recommended security standards.
+    The configured password length met recommended security standards.
 
   expected_value: >
-    Set to at least 4 characters.
+    At least 4 characters
 
   hints:
     intune: Devices > Compliance > Click target policy > Properties > Click 
@@ -882,6 +897,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Excessive Screen Lock Timeout
   section: compliance
+  remediation_id: screen_lock_timeout
 
   expected_answer: compliant
 
@@ -901,15 +917,14 @@
     authentication controls.
 
   solution: >
-    Configure devices to automatically lock and require
-    re-authentication after an appropriate period of inactivity in
-    accordance with organisational security requirements.
+    Enforce re-authentication after an appropriate period of device inactivity 
+    through compliance policies.
 
   positive: >
-    Devices automatically lock after a suitable period of inactivity.
+    Devices automatically locked after a suitable period of inactivity.
 
   expected_value: >
-    Set to 15 minutes or less.
+    15 minutes or less
 
   hints:
     intune: Devices > Compliance > Click target policy > Properties > Click 
@@ -922,6 +937,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Excessive Screen Lock Password
   section: compliance
+  remediation_id: screen_lock_reauthentication
 
   expected_answer: compliant
 
@@ -941,15 +957,14 @@
     individual.
 
   solution: >
-    Configure devices to require re-authentication within a short period
-    following screen lock events in accordance with organisational
-    security requirements.
+    Enforce automatic screen locking and re-authentication after an appropriate 
+    period of inactivity.
 
   positive: >
-    Devices require re-authentication shortly after the screen is locked.
+    Devices required re-authentication shortly after the screen is locked.
 
   expected_value: >
-    Set to 5 minutes or less.
+    5 minutes or less
 
   hints:
     intune: Devices > Compliance > Click target policy > Properties > Click 
@@ -962,6 +977,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Excessive Screen Lock Timeout
   section: compliance
+  remediation_id: screen_lock_timeout
 
   expected_answer: compliant
 
@@ -986,10 +1002,10 @@
     accordance with organisational security requirements.
 
   positive: >
-    Devices automatically lock after a suitable period of inactivity.
+    Devices automatically locked after a suitable period of inactivity.
 
   expected_value: >
-    Set to 15 minutes or less.
+    15 minutes or less
 
   hints:
     intune: Devices > Compliance > Click target policy > Properties > Click 
@@ -1002,6 +1018,7 @@
   commentary_group: Authentication and Access Control
   finding_title: Password Reuse Not Restricted
   section: compliance
+  remediation_id: password_history
 
   expected_answer: compliant
 
@@ -1020,15 +1037,15 @@
     effectiveness of device authentication requirements.
 
   solution: >
-    Configure password history settings to prevent the reuse of a
-    defined number of previously used passwords.
+    Implement password history controls to prevent the reuse of previously used 
+    passwords.
 
   positive: >
-    Password history controls prevent the reuse of previously used
+    Password history controls prevented the reuse of previously used
     authentication credentials.
 
   expected_value: >
-    Set to 5 or more.
+    5 or more
 
   hints:
     intune: Devices > Compliance > Click target policy > Properties > Click 
@@ -1041,6 +1058,7 @@
   commentary_group: Data Protection
   finding_title: Unencrypted Android Devices Allowed
   section: compliance
+  remediation_id: device_encryption
 
   expected_answer: compliant
 
@@ -1060,14 +1078,14 @@
     unauthorised parties.
 
   solution: >
-    Configure compliance policies to require device encryption and block
+    Implement compliance policies to require device encryption and block
     access from devices that do not meet encryption requirements.
 
   positive: >
-    Device encryption is enforced and verified on managed Android devices.
+    Device encryption was enforced and verified on managed Android devices.
 
   expected_value: >
-    Set to Require.
+    Require
 
   hints:
     intune: Devices > Compliance > Click on target policy > Properties > Click 
@@ -1084,6 +1102,7 @@
   commentary_group: Data Protection
   finding_title: Unrestricted Managed Application Data Sharing
   section: app_protection
+  remediation_id: managed_data_sharing
 
   expected_answer: compliant
 
@@ -1105,16 +1124,16 @@
     organisational control over sensitive data.
 
   solution: >
-    Configure Managed Open-In restrictions and data-sharing controls
+    Implement Managed Open-In restrictions and data-sharing controls
     to ensure corporate data can only be opened within approved
     managed applications.
 
   positive: >
-    Managed Open-In restrictions are configured to prevent corporate
+    Managed Open-In restrictions were configured to prevent corporate
     data from being transferred to personal applications.
 
   expected_value: >
-    Set to anything else than All Apps.
+    Anything else than All Apps
 
   hints:
     intune: Apps > Manage Apps > Protection > Select target policy > Properties 
@@ -1130,6 +1149,7 @@
   commentary_group: Device Lifecycle and Compliance
   finding_title: Absence of Compliance Policy for Inactive Devices
   section: cleanup_rules
+  remediation_id: inactive_devices
 
   expected_answer: compliant
 
@@ -1150,16 +1170,15 @@
     devices retaining access to corporate information.
 
   solution: >
-    Configure device compliance policies to automatically mark devices
-    as non-compliant after a defined period of inactivity and revoke
-    access until they reconnect.
+    Automatically mark inactive devices as non-compliant after a defined period 
+    and revoke access until they reconnect.
 
   positive: >
-    Devices that fail to check in within the defined period are
+    Devices that failed to check in within the defined period were
     automatically marked as non-compliant.
 
   expected_value: >
-    Remove devices that haven't checked in for this many days set to 60 or less.
+    Remove devices that haven't checked in for this many days set to 60 or less
 
   hints:
     intune: Devices > Organize devices > Device clean-up rules > Click target 
@@ -1175,6 +1194,7 @@
   commentary_group: Device Lifecycle and Compliance
   finding_title: Remote Wipe Not Enabled
   section: device_actions
+  remediation_id: remote_wipe
 
   expected_answer: compliant
 
@@ -1199,11 +1219,11 @@
     lost, stolen, or retired.
 
   positive: >
-    Remote wipe functionality is available and can be executed for
+    Remote wipe functionality was available and could be executed for
     managed devices.
 
   expected_value: >
-    Remote wipe functionality is enabled and operational.
+    Remote wipe functionality is enabled and operational
 
   hints:
     intune: Devices > Android / Apple mobile > Select a device > Overview > 

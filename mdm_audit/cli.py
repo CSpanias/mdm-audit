@@ -41,9 +41,9 @@ def main() -> None:
     console.print(f"[red]Findings:[/red] {len(results.findings)}")
     console.print(f"[green]Positive Observations:[/green] {len(results.positives)}")
 
-    export_findings_json(results, "findings.json")
-    export_markdown(results, "report.md")
-    export_assessment_responses_json(results, "responses.json")
+    export_findings_json(results, "mdm-findings.json")
+    export_markdown(results, "mdm-report.md")
+    export_assessment_responses_json(results, "mdm-notes.json")
 
 
 if __name__ == "__main__":

@@ -9,7 +9,14 @@ and remediation guidance.
 from pathlib import Path
 
 from mdm_audit.constants import (
-    REFERENCES, COMMENTARY_ORDER, THEME_DISPLAY, NUMBER_WORDS
+    REFERENCES,
+    REMEDIATIONS,
+    COMMENTARY_ORDER,
+    COMMENTARY_INTROS,
+    COMMENTARY_SUMMARIES,
+    COVERAGE_TEXT,
+    THEME_DISPLAY,
+    NUMBER_WORDS
 )
 from mdm_audit.models import AssessmentResults, Platform
 
@@ -269,53 +276,64 @@ def _generate_executive_summary(
 # Technical Commentary
 #-------------------------------------------------------------------------------
 
-def _get_group_intro(
-    group_name: str,
-) -> str:
+def _generate_assessment_context(
+    results: AssessmentResults,
+) -> list[str]:
+    """
+    Generate the assessment context section.
+    """
 
-    intros = {
-        "Device Lifecycle and Compliance": (
-            "The review identified a number of weaknesses relating "
-            "to device lifecycle management and compliance monitoring "
-            "controls. These controls are intended to ensure that "
-            "managed devices remain visible, compliant, and subject "
-            "to ongoing organisational oversight."
-        ),
+    context = results.context
 
-        "Authentication and Access Control": (
-            "Opportunities for improvement were identified within "
-            "the controls used to authenticate users and restrict "
-            "access to managed devices and corporate resources. "
-            "Effective implementation of these controls helps ensure "
-            "that access is limited to authorised users."
-        ),
+    lines = []
 
-        "Data Protection": (
-            "The assessment highlighted several areas where controls "
-            "designed to protect corporate information could be "
-            "further strengthened. These controls play an important "
-            "role in preventing the unauthorised disclosure, transfer, "
-            "or loss of sensitive information."
-        ),
+    lines.append(
+        "The assessed mobile device management environment is summarised below:"
+    )
+    lines.append("")
 
-        "Device Security and Hardening": (
-            "Further observations related to device hardening measures "
-            "intended to reduce the attack surface of managed devices. "
-            "Weaknesses in this area may increase exposure to insecure "
-            "configurations, unnecessary functionality, or potential "
-            "abuse of device capabilities."
-        ),
+    lines.extend([
+        "| Property | Value |",
+        "|----------|-------|",
+        f"| Organisation | {context.client_name} |",
+        f"| Platforms Reviewed | {context.platforms} |",
+        f"| MDM Solution | {context.mdm_vendor.value} |",
+        f"| MDM Version | {context.mdm_version} |",
+    ])
 
-        "Application Governance": (
-            "The review also identified opportunities to strengthen "
-            "application governance and software management controls. "
-            "These controls help ensure that software installed on "
-            "managed devices remains appropriate for organisational "
-            "use and aligned with security requirements."
-        ),
-    }
+    if context.ios_device_count is not None:
+        lines.append(
+            f"| Enrolled iOS Devices | {context.ios_device_count} |"
+        )
 
-    return intros.get(group_name, "")
+    if context.android_device_count is not None:
+        lines.append(
+            f"| Enrolled Android Devices | {context.android_device_count} |"
+        )
+
+    if context.ios_policy_count is not None:
+        lines.append(
+            f"| iOS Compliance Policies | {context.ios_policy_count} |"
+        )
+
+    if context.android_policy_count is not None:
+        lines.append(
+            f"| Android Compliance Policies | {context.android_policy_count} |"
+        )
+
+    if context.minimum_ios_version:
+        lines.append(
+            f"| Minimum Supported iOS Version | {context.minimum_ios_version} |"
+        )
+
+    if context.minimum_android_version:
+        lines.append(
+            f"| Minimum Supported Android Version | {context.minimum_android_version} |"
+        )
+
+    lines.append("")
+
+    return lines
 
 
 def _group_findings(
@@ -350,6 +368,82 @@ def _group_findings(
             ordered[group] = grouped[group]
 
     return ordered
+
+
+def _get_observation_summary(
+    findings: list,
+) -> str:
+    """
+    Build a concise summary of the observations
+    identified within a finding group.
+    """
+
+    observations = []
+
+    for finding in findings:
+
+        sentence = (
+            finding.commentary
+            .strip()
+            .split(".")[0]
+            .strip()
+        )
+
+        sentence = (
+            sentence[0].lower()
+            + sentence[1:]
+        )
+
+        observations.append(sentence)
+
+    observations = sorted(set(observations))
+
+    return _format_list(observations)
+
+
+
+def _build_group_commentary(
+    group_name: str,
+    findings: list,
+) -> str:
+    """
+    Generate narrative commentary for a group of findings.
+    """
+
+    summary = COMMENTARY_SUMMARIES[group_name]
+
+    intro = COMMENTARY_INTROS[group_name]
+
+    observations = _get_observation_summary(findings)
+
+    sections = {finding.section for finding in findings}
+
+    if (
+        "configuration" in sections
+        and "compliance" in sections
+    ):
+        coverage = COVERAGE_TEXT[group_name]["both"]
+
+    elif "configuration" in sections:
+
+        coverage = COVERAGE_TEXT[group_name]["configuration"]
+
+    elif "compliance" in sections:
+
+        coverage = COVERAGE_TEXT[group_name]["compliance"]
+
+    else:
+
+        coverage = (
+            "The identified weaknesses affected controls within this area of "
+            "the MDM platform."
+        )
+
+    return (
+        f"{summary} "
+        f"{intro}{observations}. "
+        f"{coverage}"
+    )
 
 
 def _generate_commentary(
@@ -389,68 +483,32 @@ def _generate_commentary(
 
     lines.append("")
 
-    lines.append("### iOS Devices")
-    lines.append("")
+    lines.extend(_generate_assessment_context(results))
 
     if ios_findings:
 
+        lines.append("### iOS Devices")
+        lines.append("")
+
         for group_name, findings in ios_groups.items():
 
-            lines.append(_get_group_intro(group_name))
+            lines.append(f"#### {group_name}")
             lines.append("")
 
-            for finding in findings:
-                lines.append(finding.commentary.strip())
-                lines.append("")
+            lines.append(_build_group_commentary(group_name, findings))
 
-    else:
-        lines.append(
-            "No issues were identified affecting managed iOS devices."
-        )
-
-    lines.append("")
-
-    lines.append("### Android Devices")
     lines.append("")
 
     if android_findings:
 
+        lines.append("### Android Devices")
+        lines.append("")
+
         for group_name, findings in android_groups.items():
 
-            lines.append(_get_group_intro(group_name))
+            lines.append(f"#### {group_name}")
             lines.append("")
-
-            for finding in findings:
-                lines.append(finding.commentary.strip())
-                lines.append("")
-
-    else:
-        lines.append(
-            "No issues were identified affecting managed Android devices."
-        )
-
-    lines.append("")
-
-    lines.append("### Conclusion")
-    lines.append("")
-
-    if results.findings:
-        lines.append(
-            "The review identified several opportunities to "
-            "further strengthen the security posture of managed "
-            "mobile devices. Addressing the observations "
-            "identified throughout the assessment would improve "
-            "assurance that security requirements are applied "
-            "consistently and that corporate information remains "
-            "appropriately protected."
-        )
-    else:
-        lines.append(
-            "No security weaknesses were identified during the "
-            "review. The assessed controls appeared to provide "
-            "an appropriate baseline for the secure management "
-            "of corporate mobile devices."
-        )
+            lines.append(_build_group_commentary(group_name, findings))
 
     lines.append("")
 
@@ -459,6 +517,7 @@ def _generate_commentary(
 #-------------------------------------------------------------------------------
 # Remediation
 #-------------------------------------------------------------------------------
+
 def _generate_remediation(
     results: AssessmentResults,
 ) -> list[str]:
@@ -480,12 +539,27 @@ def _generate_remediation(
     lines.append("The following remediation actions are recommended:")
     lines.append("")
 
-    recommendations = set()
+    recommendations = {}
 
     for finding in results.findings:
-        recommendations.add(finding.solution.strip())
 
-    for recommendation in sorted(recommendations):
+        remediation_id = getattr(finding, "remediation_id", None)
+
+        if remediation_id:
+
+            recommendations.setdefault(
+                remediation_id,
+                REMEDIATIONS[remediation_id],
+            )
+
+        else:
+
+            recommendations.setdefault(
+                finding.solution.strip(),
+                finding.solution.strip(),
+            )
+
+    for recommendation in sorted(recommendations.values()):
         lines.append(f"- {recommendation}")
 
     lines.append("")
@@ -501,8 +575,6 @@ def _generate_remediation(
     if vendor in REFERENCES:
         for title, url in REFERENCES[vendor].items():
             lines.append(f"- [{url}]({url})")
-
-
 
     return lines
 

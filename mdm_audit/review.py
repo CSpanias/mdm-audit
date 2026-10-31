@@ -404,6 +404,7 @@ def generate_findings(
                     description=question.description,
                     commentary=question.commentary,
                     solution=question.solution,
+                    remediation_id=question.remediation_id,
                 )
 
             )
