@@ -1144,10 +1144,10 @@
 # ------------------------------------------------------------------------------
 
 - applies_to: both
-  finding_id: intune-inactive-device-compliance-policy
+  finding_id: intune-inactive-device-clean-up-rule
   theme: Patch and Lifecycle Management
   commentary_group: Device Lifecycle and Compliance
-  finding_title: Absence of Compliance Policy for Inactive Devices
+  finding_title: Inactive Device Clean-Up Rule Not Configured
   section: cleanup_rules
   remediation_id: inactive_devices
 
@@ -1156,29 +1156,33 @@
   question: Is a device clean-up rule configured for inactive devices?
 
   description: >
-    Devices that have not checked in to the MDM platform for an extended
-    period were not automatically marked as non-compliant, increasing the
-    risk of unmanaged devices retaining access to corporate resources.
+    Devices that had not checked in to the MDM platform for an extended period 
+    were not automatically identified and managed through an inactive device 
+    clean-up process.
 
   commentary: >
-    Devices that had not communicated with the MDM platform for an
-    extended period were not automatically marked as non-compliant.
-    Consequently, devices that are no longer actively managed may retain
-    access to corporate resources despite no longer receiving policy
-    updates or compliance validation. This may reduce organisational
-    visibility of managed devices and increase the risk of unmanaged
-    devices retaining access to corporate information.
+    Devices that no longer communicate with the MDM platform may remain visible 
+    as managed devices despite no longer receiving policy updates, compliance 
+    evaluation, or administrative oversight. Over time this may reduce 
+    visibility of the active device estate and complicate asset management, 
+    monitoring, and security oversight.
+
+    Automated clean-up rules help identify and manage inactive devices by 
+    applying actions such as retirement, removal, or other lifecycle controls 
+    after a defined period of inactivity.
 
   solution: >
-    Automatically mark inactive devices as non-compliant after a defined period 
-    and revoke access until they reconnect.
+    Configure an inactive device clean-up rule that automatically retires,
+    removes, or otherwise manages devices that have not checked in within an 
+    appropriate period.
 
   positive: >
-    Devices that failed to check in within the defined period were
-    automatically marked as non-compliant.
+    Inactive devices were automatically identified and managed through a
+    defined device clean-up process.
 
   expected_value: >
-    Remove devices that haven't checked in for this many days set to 60 or less
+    A device clean-up rule is configured. Remove devices that haven't checked 
+    in for this many days is set to 60 days or less.
 
   hints:
     intune: Devices > Organize devices > Device clean-up rules > Click target 
