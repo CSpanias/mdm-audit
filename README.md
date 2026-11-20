@@ -61,7 +61,6 @@ python -m mdm_audit.cli
 - Support for Intune-based iOS / iPadOS and Android reviews
 - Markdown-formatted report generation
 - JSON findings export
-- Optional platform-specific SureFormat XML findings export
 - JSON assessment response export
 - YAML-driven assessment content
 
@@ -72,20 +71,6 @@ Just launch the tool!
 ```bash
 mdm-audit
 ```
-
-For SureCloud, run:
-
-```bash
-mdm-audit --csacyber
-```
-
-After the assessment, enter a SureCloud hostname for each reviewed platform.
-The tool writes `mdm-findings-ios.xml` and/or `mdm-findings-android.xml`,
-including only findings for that platform. It maps equivalent Intune findings
-to the existing SureCloud IDs and reports unmapped findings, which are omitted.
-The Markdown report and JSON assessment notes are written before the hostname
-prompts; older findings exports in other formats or for other platforms are not
-removed.
 
 ## Requirements
 
